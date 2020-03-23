@@ -11,6 +11,7 @@ import (
 
 func main() {
     r := mux.NewRouter()
-	r.HandleFunc("/register", controller.RegisterHandler)  
+    r.HandleFunc("/register", controller.RegisterHandler)
+    r.HandleFunc("/login", controller.LoginHandler)  
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
