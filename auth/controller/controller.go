@@ -19,38 +19,25 @@ import (
 var Users = make(map[string]model.User)
 var Tweets = make(map[string]*list.List)
 
-//func UserExsits(email string) model.User {
-//	if len(Users) != 0 {
-//		for k,v := range Users {
-//			//Check if user is already in the database
-//			if v.Username == email {
-//				return Users[k]
-//			}
-//		}
-//	}
-//
-//	return model.User{}
-//}
-
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
+	m := map[string]interface{}{}
+
+	t, _ := template.ParseFiles("register.gtpl")
+
 	if r.Method == "GET" {
-        t, _ := template.ParseFiles("register.gtpl")
-		t.Execute(w, nil)
+		t.Execute(w, m)
 		return 
     }else{
-		var res model.ResponseResult
-
-		w.Header().Set("Content-Type", "application/json")
-
+		
 		r.ParseForm()
 
 		userPresent := Users[r.Form["username"][0]]
 		
 		if userPresent.Username != "" {
-			res.Result = "Email already Exists!!"
-			json.NewEncoder(w).Encode(res)
-			return
+			m["Error"] = "Email already in use!"
+			t.Execute(w, m)
+			return 
 		}
 	
 		user := model.User{
@@ -61,14 +48,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			Followers: list.New(),
 		}
 
-
 		//fmt.Println(user)
 
 		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 
 		if err != nil {
-			res.Error = "Error While Hashing Password, Try Again"
-			json.NewEncoder(w).Encode(res)
+			m["Error"] = "Error While Hashing Password, Try Again"
+			t.Execute(w, m)
 			return
 		}
 
@@ -77,31 +63,24 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Users[user.Username] = user
 		Tweets[user.Username] = list.New()
 
-		res.Result = "Registration Successful"
-		json.NewEncoder(w).Encode(res)
-
-		fmt.Println(Users)
-
-		// t, _ := template.ParseFiles("login.gtpl")
-		// t.Execute(w, nil)
-		return 
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 	
 	return
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	
+	t, _ := template.ParseFiles("login.gtpl")
+
+	m := map[string]interface{}{}
+
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("login.gtpl")
 		t.Execute(w, nil)
 		return 
 	}
 
-	w.Header().Set("Content-Type", "text/html")
-
 	r.ParseForm()
-
-	var res model.ResponseResult
 		
 	userPresent := Users[r.Form["username"][0]]
 
@@ -109,11 +88,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		var err = bcrypt.CompareHashAndPassword([]byte(userPresent.Password), []byte(r.Form["password"][0]))
 		fmt.Println("login error", err)
 		if err != nil {
-			res.Error = "Invalid password"
-			json.NewEncoder(w).Encode(res)
-			//http.Error(w,"Invalid password",302)
-			//http.Redirect(w,r,"/login",302)
-			return
+			m["Error"] = "Invalid password"
+			t.Execute(w, m)
+			return			
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -125,13 +102,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		tokenString, err := token.SignedString([]byte("secret"))
 
 		if err != nil {
-			res.Error = "Error while generating token,Try again"
-			json.NewEncoder(w).Encode(res)
-			return
+			m["Error"] = "Error while generating token,Try again"
+			t.Execute(w, m)
+			return	
 		}
 
 		userPresent.Token = tokenString
-		//userPresent.Password = ""
 
 		Users[userPresent.Username] = userPresent
 
@@ -139,37 +115,33 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Name:    "token",
 			Value:   tokenString,
 		})
-		fmt.Println(Users)
-		json.NewEncoder(w).Encode(userPresent)
-		//http.Redirect(w,r,"/dashboard",302)
 
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
 		return
 
-	}else{
-		res.Error = "Invalid username"
-		json.NewEncoder(w).Encode(res)
-		return
 	}
 
+	m["Error"] = "Invalid username"
+	t.Execute(w, m)
+	return	
 }
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	var res model.ResponseResult
+	
+	t, _ := template.ParseFiles("profile.gtpl")
 	c, err := r.Cookie("token")
+
 	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			//w.WriteHeader(http.StatusUnauthorized)
-			res.Error = "No cookie"
-			json.NewEncoder(w).Encode(res)
-			return
-		}
-		// For any other type of error, return a bad request status
-		//w.WriteHeader(http.StatusBadRequest)
-		res.Error = "Bad request"
-		json.NewEncoder(w).Encode(res)
-		return
+		http.Redirect(w, r, "/login", http.StatusFound)
+		// if err == http.ErrNoCookie {
+		// 	// If the cookie is not set, return an unauthorized status
+		// 	//w.WriteHeader(http.StatusUnauthorized)
+		// 	http.Redirect(w, r, "/login", http.StatusFound)
+		// 	return	
+		// }
+		// // For any other type of error, return a bad request status
+		// http.Redirect(w, r, "/login", http.StatusFound)
+		// return
 	}
 	tokenString := c.Value
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -181,33 +153,34 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if token.Valid{
-		t, _ := template.ParseFiles("profile.gtpl")
 		t.Execute(w, nil)
 		return
 	}else{
-		res.Error = err.Error()
-		json.NewEncoder(w).Encode(res)
-		return
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return 
 	}
 }
 
 
 func FollowHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var res model.ResponseResult
+	
+	m := map[string]interface{}{}
+	t, _ := template.ParseFiles("profile.gtpl")
+
 	c, err := r.Cookie("token")
 	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			//w.WriteHeader(http.StatusUnauthorized)
-			res.Error = "No cookie"
-			json.NewEncoder(w).Encode(res)
-			return
-		}
-		// For any other type of error, return a bad request status
-		//w.WriteHeader(http.StatusBadRequest)
-		res.Error = "Bad request"
-		json.NewEncoder(w).Encode(res)
+		// if err == http.ErrNoCookie {
+		// 	// If the cookie is not set, return an unauthorized status
+		// 	//w.WriteHeader(http.StatusUnauthorized)
+		// 	res.Error = "No cookie"
+		// 	json.NewEncoder(w).Encode(res)
+		// 	return
+		// }
+		// // For any other type of error, return a bad request status
+		// //w.WriteHeader(http.StatusBadRequest)
+		// res.Error = "Bad request"
+		// json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 	tokenString := c.Value
@@ -220,10 +193,12 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if !token.Valid{
-		res.Error = "Invalid token"
-		json.NewEncoder(w).Encode(res)
+		// res.Error = "Invalid token"
+		// json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
+
 	r.ParseForm()
 	//fmt.Println(r.Form["username"][0])
 	userPresent := Users[r.Form["username"][0]]
@@ -231,49 +206,56 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	followUser := Users[claims["username"].(string)]
 
 	if userPresent == followUser{
-		res.Error = "Cant follow yourself"
-		json.NewEncoder(w).Encode(res)
+		m["Error"] = "Cant follow yourself"
+		m["Success"] = nil
+		t.Execute(w, m)
 		return
 	}
 
 	for e := followUser.Followers.Front() ; e != nil ; e.Next(){
 		k := e.Value.(model.User)
 		if userPresent == k{
-			res.Error = "User already followed"
-			json.NewEncoder(w).Encode(res)
-			return
+			m["Error"] = "User already followed!"
+			m["Success"] = nil
+			t.Execute(w, m)
+			return	
 		}
 	}
 	if userPresent.Username != "" {
 		followUser.Followers.PushBack(userPresent)
 		Users[followUser.Username] = followUser
-		fmt.Println("succesfully followed")
-		res.Result = "Succesfully followed"
-		json.NewEncoder(w).Encode(res)
+		m["Error"] = nil
+		m["Success"] = "Succesfully followed!"
+		t.Execute(w, m)
 		return
 	} else {
-		res.Error = "Username doesnt exist"
-		json.NewEncoder(w).Encode(res)
+		m["Error"] = "Username doesnt exist!"
+		m["Success"] = nil
+		t.Execute(w, m)
 		return
 	}
 }
 
 func TweetHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var res model.ResponseResult
+
+	t, _ := template.ParseFiles("profile.gtpl")
+	m := map[string]interface{}{}
+
 	c, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
 			// If the cookie is not set, return an unauthorized status
 			//w.WriteHeader(http.StatusUnauthorized)
-			res.Error = "No cookie"
-			json.NewEncoder(w).Encode(res)
+			// res.Error = "No cookie"
+			// json.NewEncoder(w).Encode(res)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 		// For any other type of error, return a bad request status
 		//w.WriteHeader(http.StatusBadRequest)
-		res.Error = "Bad request"
-		json.NewEncoder(w).Encode(res)
+		// res.Error = "Bad request"
+		// json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 	tokenString := c.Value
@@ -286,8 +268,9 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if !token.Valid{
-		res.Error = "Invalid token"
-		json.NewEncoder(w).Encode(res)
+		// res.Error = "Invalid token"
+		// json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 	r.ParseForm()
@@ -305,33 +288,37 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("after",e.Value)
 		}
 		//Users[followUser.Username] = followUser
-		fmt.Println("succesfully tweeted")
-		res.Result = "Succesfully tweeted"
-		json.NewEncoder(w).Encode(res)
+
+		m["Error"] = nil
+		m["Success"] = "Succesfully tweeted!"
+		t.Execute(w, m)
 		return
+
 	} else {
-		res.Error = "Username doesnt exist"
-		json.NewEncoder(w).Encode(res)
+
+		m["Error"] = "Username doesnt exist"
+		m["Success"] = nil
+		t.Execute(w, m)
 		return
 	}
 }
 
 func FeedHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var res model.ResponseResult
+	t, _ := template.ParseFiles("profile.gtpl")
+	m := map[string]interface{}{}
+
 	c, err := r.Cookie("token")
 	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			//w.WriteHeader(http.StatusUnauthorized)
-			res.Error = "No cookie"
-			json.NewEncoder(w).Encode(res)
-			return
-		}
-		// For any other type of error, return a bad request status
-		//w.WriteHeader(http.StatusBadRequest)
-		res.Error = "Bad request"
-		json.NewEncoder(w).Encode(res)
+		// if err == http.ErrNoCookie {
+		// 	// If the cookie is not set, return an unauthorized status
+		// 	//w.WriteHeader(http.StatusUnauthorized)
+			
+		// 	http.Redirect(w, r, "/login", http.StatusFound)
+		// 	return
+		// }
+		// // For any other type of error, return a bad request status
+		// //w.WriteHeader(http.StatusBadRequest)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 	tokenString := c.Value
@@ -344,8 +331,7 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if !token.Valid{
-		res.Error = "Invalid token"
-		json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
@@ -368,29 +354,30 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		res.Result = feed
 		json.NewEncoder(w).Encode(res)
 		return
-	} else {
-		res.Error = "No feed"
-		json.NewEncoder(w).Encode(res)
+	} else {		
+		m["Error"] = "No feed"
+		m["Success"] = nil
+		t.Execute(w, m)
 		return
 	}
 }
 
 func SignoutHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var res model.ResponseResult
+	
 	c, err := r.Cookie("token")
 	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			//w.WriteHeader(http.StatusUnauthorized)
-			res.Error = "No cookie"
-			json.NewEncoder(w).Encode(res)
-			return
-		}
-		// For any other type of error, return a bad request status
-		//w.WriteHeader(http.StatusBadRequest)
-		res.Error = "Bad request"
-		json.NewEncoder(w).Encode(res)
+		// if err == http.ErrNoCookie {
+		// 	// If the cookie is not set, return an unauthorized status
+		// 	//w.WriteHeader(http.StatusUnauthorized)
+		// 	res.Error = "No cookie"
+		// 	json.NewEncoder(w).Encode(res)
+		// 	return
+		// }
+		// // For any other type of error, return a bad request status
+		// //w.WriteHeader(http.StatusBadRequest)
+		// res.Error = "Bad request"
+		// json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 	tokenString := c.Value
@@ -403,8 +390,9 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if !token.Valid || err != nil{
-		res.Error = "Invalid token"
-		json.NewEncoder(w).Encode(res)
+		// res.Error = "Invalid token"
+		// json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
 
@@ -423,8 +411,7 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		fmt.Println(Users)
 		fmt.Println("Logout succesfull")
-		res.Result = "Logout successful"
-		json.NewEncoder(w).Encode(res)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	} else {
 		res.Error = "Couldnt logout"
