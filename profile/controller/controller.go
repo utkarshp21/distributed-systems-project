@@ -11,14 +11,13 @@ import (
 	"net/http"
 )
 
-func DashboardHandler(w http.ResponseWriter, r *http.Request) {
-	
-	t, _ := template.ParseFiles("profile.gtpl")
+
+//Checks if session exists otherwise takes to login page
+func getToken(w http.ResponseWriter, r *http.Request) *jwt.Token {
 	c, err := r.Cookie("token")
 
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
-		return
 	}
 	tokenString := c.Value
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -28,6 +27,15 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return []byte("secret"), nil
 	})
+
+	return token
+}
+
+func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+
+	t, _ := template.ParseFiles("profile.gtpl")
+
+	var token = getToken(w, r)
 
 	if token.Valid{
 		t.Execute(w, nil)
@@ -38,25 +46,13 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	
 	m := map[string]interface{}{}
+	
 	t, _ := template.ParseFiles("profile.gtpl")
-
-	c, err := r.Cookie("token")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
-	tokenString := c.Value
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method")
-		}
-		return []byte("secret"), nil
-	})
+	
+	var token = getToken(w, r)
 
 	if !token.Valid{
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -105,25 +101,7 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-		// For any other type of error, return a bad request status
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
-	tokenString := c.Value
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method")
-		}
-		return []byte("secret"), nil
-	})
+	var token = getToken(w, r)
 
 	if !token.Valid{
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -162,19 +140,7 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
-	c, err := r.Cookie("token")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
-	tokenString := c.Value
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method")
-		}
-		return []byte("secret"), nil
-	})
+	var token = getToken(w, r)
 
 	if !token.Valid{
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -211,21 +177,9 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 
 func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 	
-	c, err := r.Cookie("token")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	}
-	tokenString := c.Value
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method")
-		}
-		return []byte("secret"), nil
-	})
+	var token = getToken(w, r)
 
-	if !token.Valid || err != nil{
+	if !token.Valid {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}

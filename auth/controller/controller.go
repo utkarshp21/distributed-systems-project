@@ -110,7 +110,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Value:   tokenString,
 		})
 
-		http.Redirect(w, r, "/dashboard", http.StatusFound)
+		http.Redirect(w, r, "/profile", http.StatusFound)
 		return
 
 	}

@@ -14,7 +14,7 @@ func main() {
     r := mux.NewRouter()
     r.HandleFunc("/register", authController.RegisterHandler)
     r.HandleFunc("/login", authController.LoginHandler)
-    r.HandleFunc("/dashboard",profileController.DashboardHandler)
+    r.HandleFunc("/profile",profileController.ProfileHandler)
     r.HandleFunc("/follow", profileController.FollowHandler)
     r.HandleFunc("/tweet", profileController.TweetHandler)
     r.HandleFunc("/feed", profileController.FeedHandler)
