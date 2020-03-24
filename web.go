@@ -4,19 +4,20 @@ import (
     "net/http"
     // "strings"
     "log"
-    "auth/controller"
+    authController "auth/controller"
+    profileController "profile/controller"
     // "auth/model"
     "github.com/gorilla/mux"
 )
 
 func main() {
     r := mux.NewRouter()
-    r.HandleFunc("/register", controller.RegisterHandler)
-    r.HandleFunc("/login", controller.LoginHandler)
-    r.HandleFunc("/dashboard",controller.DashboardHandler)
-    r.HandleFunc("/follow", controller.FollowHandler)
-    r.HandleFunc("/tweet", controller.TweetHandler)
-    r.HandleFunc("/feed", controller.FeedHandler)
-    r.HandleFunc("/signout", controller.SignoutHandler)
+    r.HandleFunc("/register", authController.RegisterHandler)
+    r.HandleFunc("/login", authController.LoginHandler)
+    r.HandleFunc("/dashboard",profileController.DashboardHandler)
+    r.HandleFunc("/follow", profileController.FollowHandler)
+    r.HandleFunc("/tweet", profileController.TweetHandler)
+    r.HandleFunc("/feed", profileController.FeedHandler)
+    r.HandleFunc("/signout", profileController.SignoutHandler)
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
