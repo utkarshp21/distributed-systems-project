@@ -164,6 +164,10 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	if feed != "" {
 		fmt.Println("feed succesfull")
 		fmt.Println(feed)
+		m["Error"] = nil
+		m["Success"] = nil
+		m["Feed"] = feed
+		t.Execute(w, m)
 		// res.Result = feed
 		// json.NewEncoder(w).Encode(res)
 		return
