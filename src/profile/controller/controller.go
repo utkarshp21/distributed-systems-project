@@ -129,7 +129,7 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		m["Error"] = "Username doesnt exist"
+		m["Error"] = "Enter tweet content"
 		m["Success"] = nil
 		t.Execute(w, m)
 		return
