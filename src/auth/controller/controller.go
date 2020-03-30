@@ -23,17 +23,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, m)
 		return 
     }else{
-		
 		r.ParseForm()
-
 		userPresent := authStorage.Users[r.Form["username"][0]]
-		
 		if userPresent.Username != "" {
 			m["Error"] = "Email already in use!"
 			t.Execute(w, m)
 			return 
 		}
-	
 		user := model.User{
 			Username:r.Form["username"][0], 
 			Password: r.Form["password"][0],
@@ -41,7 +37,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			LastName: r.Form["lastname"][0],
 			Followers: list.New(),
 		}
-
 		//fmt.Println(user)
 
 		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
@@ -56,7 +51,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		authStorage.Users[user.Username] = user
 		profileStorage.Tweets[user.Username] = list.New()
-
+		fmt.Println("Registered succesfully",user.Username)
 		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 	
