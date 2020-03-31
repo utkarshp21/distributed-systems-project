@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"auth/model"
+	authmodel "auth/model"
+	profilemodel "profile/model"
 	"time"
 	authStorage "auth/storage"
 	profileStorage "profile/storage"
@@ -12,12 +13,10 @@ import (
 )
 
 
-//Checks if session exists otherwise takes to login page
 func getToken(c *http.Cookie) (*jwt.Token,error) {
 
 	tokenString := c.Value
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method")
 		}
@@ -68,10 +67,16 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseForm()
-	//fmt.Println(r.Form["username"][0])
+
+	authmodel.UsersMux.Lock()
 	userPresent := authStorage.Users[r.Form["username"][0]]
+	authmodel.UsersMux.Unlock()
+
 	claims, _ := token.Claims.(jwt.MapClaims)
+
+	authmodel.UsersMux.Lock()
 	followUser := authStorage.Users[claims["username"].(string)]
+	authmodel.UsersMux.Unlock()
 
 	if userPresent == followUser{
 		m["Error"] = "Cant follow yourself"
@@ -81,7 +86,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for e := followUser.Followers.Front() ; e != nil ; e.Next(){
-		k := e.Value.(model.User)
+		k := e.Value.(authmodel.User)
 		if userPresent == k{
 			m["Error"] = "User already followed!"
 			m["Success"] = nil
@@ -91,7 +96,11 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if userPresent.Username != "" {
 		followUser.Followers.PushBack(userPresent)
+
+		authmodel.UsersMux.Lock()
 		authStorage.Users[followUser.Username] = followUser
+		authmodel.UsersMux.Unlock()
+
 		m["Error"] = nil
 		m["Success"] = "Succesfully followed!"
 		t.Execute(w, m)
@@ -123,19 +132,15 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
-	//fmt.Println(r.Form["username"][0])
 	tweetContent := r.Form["tweet"][0]
 
 	if tweetContent != "" {
 		claims, _ := token.Claims.(jwt.MapClaims)
 		tweetUser := claims["username"].(string)
-		for e := profileStorage.Tweets[tweetUser].Front(); e != nil; e = e.Next() {
-			fmt.Println("before",e.Value)
-		}
+
+		profilemodel.TweetsMux.Lock()
 		profileStorage.Tweets[tweetUser].PushBack(tweetContent)
-		for e := profileStorage.Tweets[tweetUser].Front(); e != nil; e = e.Next() {
-			fmt.Println("after",e.Value)
-		}
+		profilemodel.TweetsMux.Unlock()
 
 		m["Error"] = nil
 		m["Success"] = "Succesfully tweeted!"
@@ -171,11 +176,19 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 
 	claims, _ := token.Claims.(jwt.MapClaims)
 	feedUserName := claims["username"].(string)
+
+	authmodel.UsersMux.Lock()
 	feedUser := authStorage.Users[feedUserName]
+	authmodel.UsersMux.Unlock()
+
 	feed := ""
 	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
-		followUser := e.Value.(model.User)
+		followUser := e.Value.(authmodel.User)
+
+		profilemodel.TweetsMux.Lock()
 		tweetList := profileStorage.Tweets[followUser.Username]
+		profilemodel.TweetsMux.Unlock()
+
 		numOfTweets := 5
 		feed = feed + " Top 5 tweets from "+ followUser.Username + " : \n"
 		for k := tweetList.Back(); k != nil && numOfTweets > 0; k = k.Prev() {
@@ -190,8 +203,6 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		m["Success"] = nil
 		m["Feed"] = feed
 		t.Execute(w, m)
-		// res.Result = feed
-		// json.NewEncoder(w).Encode(res)
 		return
 	} else {
 		m["Error"] = "No feed"
@@ -219,24 +230,28 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	claims, _ := token.Claims.(jwt.MapClaims)
 	signoutUserName := claims["username"].(string)
+
+	authmodel.UsersMux.Lock()
 	signoutUser := authStorage.Users[signoutUserName]
+	authmodel.UsersMux.Unlock()
 
 	if signoutUser.Username != "" {
 
 		signoutUser.Token = ""
+
+		authmodel.UsersMux.Lock()
 		authStorage.Users[signoutUserName] = signoutUser
+		authmodel.UsersMux.Unlock()
+
 		http.SetCookie(w, &http.Cookie{
 			Name:    "token",
 			Value:   "",
 			Expires: time.Unix(0, 0),
 		})
-		fmt.Println(authStorage.Users)
 		fmt.Println("Logout succesfull")
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	} else {
-		// res.Error = "Couldnt logout"
-		// json.NewEncoder(w).Encode(res)
 		fmt.Println("Logout error")
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
