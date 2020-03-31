@@ -2,17 +2,41 @@ package controller
 
 import (
 	authmodel "auth/model"
-	profilemodel "profile/model"
-	"container/list"
 	authStorage "auth/storage"
-	profileStorage "profile/storage"
+	"container/list"
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"net/http"
+	profilemodel "profile/model"
+	profileStorage "profile/storage"
 )
 
+func SaveUser(r *http.Request) (authmodel.User,error){
+
+	r.ParseForm()
+	user := authmodel.User{
+		Username:r.Form["username"][0],
+		Password: r.Form["password"][0],
+		FirstName: r.Form["firstname"][0],
+		LastName: r.Form["lastname"][0],
+		Followers: list.New(),
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
+
+	if err != nil {
+		return user,err
+	}
+
+	user.Password = string(hash)
+
+	authmodel.UsersMux.Lock()
+	authStorage.Users[user.Username] = user
+	authmodel.UsersMux.Unlock()
+
+	return user,nil
+}
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -35,26 +59,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			t.Execute(w, m)
 			return 
 		}
-		user := authmodel.User{
-			Username:r.Form["username"][0], 
-			Password: r.Form["password"][0],
-			FirstName: r.Form["firstname"][0],
-			LastName: r.Form["lastname"][0],
-			Followers: list.New(),
-		}
-		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
+
+		user, err := SaveUser(r)
 
 		if err != nil {
 			m["Error"] = "Error While Hashing Password, Try Again"
 			t.Execute(w, m)
 			return
 		}
-
-		user.Password = string(hash)
-
-		authmodel.UsersMux.Lock()
-		authStorage.Users[user.Username] = user
-		authmodel.UsersMux.Unlock()
 
 		profilemodel.TweetsMux.Lock()
 		profileStorage.Tweets[user.Username] = list.New()
