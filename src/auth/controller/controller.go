@@ -79,6 +79,29 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func LoginUser(userPresent authmodel.User) (string,error){
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username":  userPresent.Username,
+		"firstname": userPresent.FirstName,
+		"lastname":  userPresent.LastName,
+	})
+
+	tokenString, err := token.SignedString([]byte("secret"))
+
+	if err != nil {
+		return "",err
+	}
+
+	userPresent.Token = tokenString
+
+	authmodel.UsersMux.Lock()
+	authStorage.Users[userPresent.Username] = userPresent
+	authmodel.UsersMux.Unlock()
+
+	return tokenString,nil
+}
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	
 	t, _ := template.ParseFiles("login.gtpl")
@@ -104,25 +127,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return			
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"username":  userPresent.Username,
-			"firstname": userPresent.FirstName,
-			"lastname":  userPresent.LastName,
-		})
+		tokenString, loginerr := LoginUser(userPresent)
 
-		tokenString, err := token.SignedString([]byte("secret"))
-
-		if err != nil {
+		if loginerr != nil {
 			m["Error"] = "Error while generating token,Try again"
 			t.Execute(w, m)
-			return	
+			return
 		}
-
-		userPresent.Token = tokenString
-
-		authmodel.UsersMux.Lock()
-		authStorage.Users[userPresent.Username] = userPresent
-		authmodel.UsersMux.Unlock()
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "token",
