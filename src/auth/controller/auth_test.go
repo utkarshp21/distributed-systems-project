@@ -33,7 +33,6 @@ func TestSaveUser(t *testing.T) {
 	if len(authStorage.Users) == 100 {
 		t.Log("Test SaveUser succesful")
 	}else{
-		//t.Error("Number of users missing %d",100-len(authStorage.Users))
-		t.Error("Test failed")
+		t.Errorf("Number of users missing %d",100-len(authStorage.Users))
 	}
 }
