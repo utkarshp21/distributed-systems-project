@@ -97,7 +97,7 @@ func TestLoginUser(t *testing.T) {
 		}
 	}
 	if userCount == 1000{
-		t.Log("Test case successful")
+		t.Log("Test LoginUser successful")
 	}else {
 		t.Errorf("Number of users not logged in: %d",1000-userCount)
 	}
