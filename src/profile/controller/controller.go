@@ -13,12 +13,8 @@ import (
 
 
 //Checks if session exists otherwise takes to login page
-func getToken(w http.ResponseWriter, r *http.Request) *jwt.Token {
-	c, err := r.Cookie("token")
+func getToken(c *http.Cookie) (*jwt.Token,error) {
 
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
-	}
 	tokenString := c.Value
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
@@ -28,16 +24,22 @@ func getToken(w http.ResponseWriter, r *http.Request) *jwt.Token {
 		return []byte("secret"), nil
 	})
 
-	return token
+	return token, err
 }
 
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.ParseFiles("profile.gtpl")
+	c, err := r.Cookie("token")
 
-	var token = getToken(w, r)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
 
-	if token.Valid{
+	token, tokenerr := getToken(c)
+
+	if token.Valid && tokenerr == nil{
 		t.Execute(w, nil)
 		return
 	}else{
@@ -47,14 +49,20 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FollowHandler(w http.ResponseWriter, r *http.Request) {
-	
-	m := map[string]interface{}{}
-	
-	t, _ := template.ParseFiles("profile.gtpl")
-	
-	var token = getToken(w, r)
 
-	if !token.Valid{
+	m := map[string]interface{}{}
+
+	t, _ := template.ParseFiles("profile.gtpl")
+	c, err := r.Cookie("token")
+
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	token, tokenerr := getToken(c)
+
+	if !token.Valid || tokenerr != nil{
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
@@ -78,7 +86,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 			m["Error"] = "User already followed!"
 			m["Success"] = nil
 			t.Execute(w, m)
-			return	
+			return
 		}
 	}
 	if userPresent.Username != "" {
@@ -101,9 +109,16 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
-	var token = getToken(w, r)
+	c, err := r.Cookie("token")
 
-	if !token.Valid{
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	token, tokenerr := getToken(c)
+
+	if !token.Valid || tokenerr != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
@@ -140,9 +155,16 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
-	var token = getToken(w, r)
+	c, err := r.Cookie("token")
 
-	if !token.Valid{
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	token, tokenerr := getToken(c)
+
+	if !token.Valid || tokenerr != nil{
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
@@ -171,7 +193,7 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		// res.Result = feed
 		// json.NewEncoder(w).Encode(res)
 		return
-	} else {		
+	} else {
 		m["Error"] = "No feed"
 		m["Success"] = nil
 		t.Execute(w, m)
@@ -180,10 +202,17 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SignoutHandler(w http.ResponseWriter, r *http.Request) {
-	
-	var token = getToken(w, r)
 
-	if !token.Valid {
+	c, err := r.Cookie("token")
+
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+
+	token, tokenerr := getToken(c)
+
+	if !token.Valid || tokenerr != nil {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
