@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"auth/model"
+	authmodel "auth/model"
+	profilemodel "profile/model"
 	"container/list"
 	authStorage "auth/storage"
 	profileStorage "profile/storage"
@@ -24,21 +25,23 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return 
     }else{
 		r.ParseForm()
+
+		authmodel.UsersMux.Lock()
 		userPresent := authStorage.Users[r.Form["username"][0]]
+		authmodel.UsersMux.Unlock()
+
 		if userPresent.Username != "" {
 			m["Error"] = "Email already in use!"
 			t.Execute(w, m)
 			return 
 		}
-		user := model.User{
+		user := authmodel.User{
 			Username:r.Form["username"][0], 
 			Password: r.Form["password"][0],
 			FirstName: r.Form["firstname"][0],
 			LastName: r.Form["lastname"][0],
 			Followers: list.New(),
 		}
-		//fmt.Println(user)
-
 		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 
 		if err != nil {
@@ -49,8 +52,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		user.Password = string(hash)
 
+		authmodel.UsersMux.Lock()
 		authStorage.Users[user.Username] = user
+		authmodel.UsersMux.Unlock()
+
+		profilemodel.TweetsMux.Lock()
 		profileStorage.Tweets[user.Username] = list.New()
+		profilemodel.TweetsMux.Unlock()
+
 		fmt.Println("Registered succesfully",user.Username)
 		http.Redirect(w, r, "/login", http.StatusFound)
 	}
@@ -70,12 +79,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseForm()
-		
+
+	authmodel.UsersMux.Lock()
 	userPresent := authStorage.Users[r.Form["username"][0]]
+	authmodel.UsersMux.Unlock()
 
 	if userPresent.Username != "" {
 		var err = bcrypt.CompareHashAndPassword([]byte(userPresent.Password), []byte(r.Form["password"][0]))
-		fmt.Println("login error", err)
 		if err != nil {
 			m["Error"] = "Invalid password"
 			t.Execute(w, m)
@@ -98,7 +108,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		userPresent.Token = tokenString
 
+		authmodel.UsersMux.Lock()
 		authStorage.Users[userPresent.Username] = userPresent
+		authmodel.UsersMux.Unlock()
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "token",
