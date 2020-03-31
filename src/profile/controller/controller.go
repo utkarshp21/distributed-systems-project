@@ -47,6 +47,15 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func FollowUser(userPresent authmodel.User,followUser authmodel.User)  {
+
+	followUser.Followers.PushBack(userPresent)
+	authmodel.UsersMux.Lock()
+	authStorage.Users[followUser.Username] = followUser
+	authmodel.UsersMux.Unlock()
+
+}
+
 func FollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	m := map[string]interface{}{}
@@ -95,12 +104,8 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if userPresent.Username != "" {
-		followUser.Followers.PushBack(userPresent)
 
-		authmodel.UsersMux.Lock()
-		authStorage.Users[followUser.Username] = followUser
-		authmodel.UsersMux.Unlock()
-
+		FollowUser(userPresent,followUser)
 		m["Error"] = nil
 		m["Success"] = "Succesfully followed!"
 		t.Execute(w, m)
@@ -111,6 +116,13 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, m)
 		return
 	}
+}
+
+func SaveTweet(tweetUser string,tweetContent string){
+
+	profilemodel.TweetsMux.Lock()
+	profileStorage.Tweets[tweetUser].PushBack(tweetContent)
+	profilemodel.TweetsMux.Unlock()
 }
 
 func TweetHandler(w http.ResponseWriter, r *http.Request) {
@@ -137,11 +149,7 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	if tweetContent != "" {
 		claims, _ := token.Claims.(jwt.MapClaims)
 		tweetUser := claims["username"].(string)
-
-		profilemodel.TweetsMux.Lock()
-		profileStorage.Tweets[tweetUser].PushBack(tweetContent)
-		profilemodel.TweetsMux.Unlock()
-
+		SaveTweet(tweetUser,tweetContent)
 		m["Error"] = nil
 		m["Success"] = "Succesfully tweeted!"
 		t.Execute(w, m)
@@ -154,6 +162,23 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, m)
 		return
 	}
+}
+
+func FeedGenerate(followUser authmodel.User) string {
+	profilemodel.TweetsMux.Lock()
+	tweetList := profileStorage.Tweets[followUser.Username]
+	profilemodel.TweetsMux.Unlock()
+
+	numOfTweets := 5
+	feed := ""
+	for k := tweetList.Back(); k != nil && numOfTweets > 0; k = k.Prev() {
+		numOfTweets = numOfTweets - 1
+		feed = feed + k.Value.(string) + "\n"
+	}
+	if feed != ""{
+		feed = "Top 5 tweets from "+ followUser.Username + " : \n" + feed
+	}
+	return feed
 }
 
 func FeedHandler(w http.ResponseWriter, r *http.Request) {
@@ -184,17 +209,7 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	feed := ""
 	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
 		followUser := e.Value.(authmodel.User)
-
-		profilemodel.TweetsMux.Lock()
-		tweetList := profileStorage.Tweets[followUser.Username]
-		profilemodel.TweetsMux.Unlock()
-
-		numOfTweets := 5
-		feed = feed + " Top 5 tweets from "+ followUser.Username + " : \n"
-		for k := tweetList.Back(); k != nil && numOfTweets > 0; k = k.Prev() {
-			numOfTweets = numOfTweets - 1
-			feed = feed + k.Value.(string) + "\n"
-		}
+		feed = feed + FeedGenerate(followUser)
 	}
 	if feed != "" {
 		fmt.Println("feed succesfull")
@@ -210,6 +225,16 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, m)
 		return
 	}
+}
+
+func SignoutUser(signoutUser authmodel.User)  {
+
+	signoutUser.Token = ""
+
+	authmodel.UsersMux.Lock()
+	authStorage.Users[signoutUser.Username] = signoutUser
+	authmodel.UsersMux.Unlock()
+
 }
 
 func SignoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -237,12 +262,7 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	if signoutUser.Username != "" {
 
-		signoutUser.Token = ""
-
-		authmodel.UsersMux.Lock()
-		authStorage.Users[signoutUserName] = signoutUser
-		authmodel.UsersMux.Unlock()
-
+		SignoutUser(signoutUser)
 		http.SetCookie(w, &http.Cookie{
 			Name:    "token",
 			Value:   "",
