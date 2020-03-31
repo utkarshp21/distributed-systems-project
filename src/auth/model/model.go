@@ -1,6 +1,9 @@
 package model
 
-import "container/list"
+import (
+	"container/list"
+	"sync"
+)
 
 type User struct {
 	Username  string `json:"username"`
@@ -11,9 +14,9 @@ type User struct {
 	Followers *list.List `json:"followers"`
 }
 
-
-
 type ResponseResult struct {
 	Error  string `json:"error"`
 	Result string `json:"result"`
 }
+
+var UsersMux = &sync.Mutex{}
