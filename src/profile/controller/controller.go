@@ -291,7 +291,7 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 			Expires: time.Unix(0, 0),
 		})
 		fmt.Println("Logout succesfull")
-		redirectToLogin(w)
+		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	} else {
 		fmt.Println("Logout error")
