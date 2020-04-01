@@ -2,12 +2,15 @@ package controller
 
 import (
 	"container/list"
+	//"fmt"
 	"strconv"
 	authmodel "auth/model"
 	authStorage "auth/storage"
 	"sync"
 	"testing"
 	"golang.org/x/crypto/bcrypt"
+	profileStorage "profile/storage"
+	//profilemodel "profile/model"
 )
 
 func MockupUserData() error{
@@ -31,6 +34,26 @@ func MockupUserData() error{
 		authStorage.Users[user.Username] = user
 	}
 	return nil
+}
+
+func MockUpTweet() {
+
+	for i:= 0 ; i < 1000 ; i++{
+		tweetUser := "user"+strconv.Itoa(i)
+		profileStorage.Tweets[tweetUser] = list.New()
+	}
+}
+
+func MockUpTweetData()  {
+	for i:= 0 ; i < 1000 ; i++{
+		tweetUser := "user"+strconv.Itoa(i)
+		tweetList := list.New()
+		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 1")
+		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 2")
+		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 3")
+		profileStorage.Tweets[tweetUser] = tweetList
+	}
+
 }
 
 func TestFollowUser(t *testing.T) {
@@ -68,4 +91,50 @@ func TestFollowUser(t *testing.T) {
 	}
 	t.Log("Test FolloweUser successful")
 
+}
+
+func TestSaveTweet(t *testing.T) {
+	MockUpTweet()
+	wg := sync.WaitGroup{}
+	for i := 0 ; i < 10 ; i++ {
+		wg.Add(1)
+		go func(v int) {
+			defer wg.Done()
+			tweetUser := "user" + strconv.Itoa(v)
+			for j := 0 ; j < 3 ; j++{
+				tweetContent := tweetUser + "tweet" + strconv.Itoa(j)
+				SaveTweet(tweetUser,tweetContent)
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	for i := 0 ; i < 10 ; i++ {
+		tweetUser := "user" + strconv.Itoa(i)
+		if profileStorage.Tweets[tweetUser].Len() != 3{
+			t.Error("Error while saving tweet of"+tweetUser)
+		}
+	}
+	t.Log("Test SaveTweet successful")
+}
+
+func TestFeedGenerate(t *testing.T) {
+
+	MockUpTweetData()
+	wg := sync.WaitGroup{}
+	//t.Log(profileStorage.Tweets["user0"].Len())
+	for i := 0 ; i < 10 ; i++ {
+		wg.Add(1)
+		go func(v int) {
+			defer wg.Done()
+			tweetUser := "user" + strconv.Itoa(v)
+			feed := FeedGenerate(tweetUser)
+			t.Log(feed)
+			if feed == ""{
+				t.Errorf("Feed generation unsuccessful for user%d",i)
+			}
+		}(i)
+	}
+	wg.Wait()
+	t.Log("Test FeedGenerate successful")
 }
