@@ -23,6 +23,7 @@ func MockupUserData() error{
 			FirstName: "us"+strconv.Itoa(i),
 			LastName: "er"+strconv.Itoa(i),
 			Followers: list.New(),
+			Token: "abcd"+strconv.Itoa(i),
 		}
 		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 
@@ -122,14 +123,12 @@ func TestFeedGenerate(t *testing.T) {
 
 	MockUpTweetData()
 	wg := sync.WaitGroup{}
-	//t.Log(profileStorage.Tweets["user0"].Len())
 	for i := 0 ; i < 10 ; i++ {
 		wg.Add(1)
 		go func(v int) {
 			defer wg.Done()
 			tweetUser := "user" + strconv.Itoa(v)
 			feed := FeedGenerate(tweetUser)
-			t.Log(feed)
 			if feed == ""{
 				t.Errorf("Feed generation unsuccessful for user%d",i)
 			}
@@ -137,4 +136,23 @@ func TestFeedGenerate(t *testing.T) {
 	}
 	wg.Wait()
 	t.Log("Test FeedGenerate successful")
+}
+
+func TestSignoutUser(t *testing.T) {
+
+	MockupUserData()
+	wg := sync.WaitGroup{}
+	for i := 0 ; i < 10 ; i++ {
+		wg.Add(1)
+		go func(v int) {
+			defer wg.Done()
+			signoutUser := authStorage.Users["user" + strconv.Itoa(v)]
+			SignoutUser(signoutUser)
+			if authStorage.Users["user" + strconv.Itoa(v)].Token != ""{
+				t.Errorf("Signout unsuccessful for %s",signoutUser.Username)
+			}
+		}(i)
+	}
+	wg.Wait()
+	t.Log("Test SignoutUser successful")
 }
