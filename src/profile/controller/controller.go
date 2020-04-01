@@ -135,6 +135,7 @@ func SaveTweet(tweetUser string,tweetContent string){
 	profilemodel.TweetsMux.Lock()
 	profileStorage.Tweets[tweetUser].PushBack(tweetContent)
 	profilemodel.TweetsMux.Unlock()
+
 }
 
 func TweetHandler(w http.ResponseWriter, r *http.Request) {
@@ -181,9 +182,9 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func FeedGenerate(followUser authmodel.User) string {
+func FeedGenerate(followUsername string) string {
 	profilemodel.TweetsMux.Lock()
-	tweetList := profileStorage.Tweets[followUser.Username]
+	tweetList := profileStorage.Tweets[followUsername]
 	profilemodel.TweetsMux.Unlock()
 
 	numOfTweets := 5
@@ -193,7 +194,7 @@ func FeedGenerate(followUser authmodel.User) string {
 		feed = feed + k.Value.(string) + "\n"
 	}
 	if feed != ""{
-		feed = "Top 5 tweets from "+ followUser.Username + " : \n" + feed
+		feed = "Top 5 tweets from "+ followUsername + " : \n" + feed
 	}
 	return feed
 }
@@ -229,7 +230,8 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	feed := ""
 	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
 		followUser := e.Value.(authmodel.User)
-		feed = feed + FeedGenerate(followUser)
+		followUsername := followUser.Username
+		feed = feed + FeedGenerate(followUsername)
 	}
 	if feed != "" {
 		fmt.Println("feed succesfull")
