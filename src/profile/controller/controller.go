@@ -31,6 +31,7 @@ func redirectToLogin(w http.ResponseWriter){
 	m := map[string]interface{}{}
 	m["Error"] = "Please login to continue!"
 	m["Success"] = nil
+	fmt.Println("Please login to continue")
 	t.Execute(w, m)
 }
 
@@ -47,6 +48,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	token, tokenerr := getToken(c)
 
 	if token.Valid && tokenerr == nil{
+		fmt.Println("Profile loaded succesfully")
 		t.Execute(w, nil)
 		return
 	}else{
@@ -83,7 +85,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	token, tokenerr := getToken(c)
 
 	if !token.Valid || tokenerr != nil{
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 
@@ -102,6 +104,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	if userPresent == followUser{
 		m["Error"] = "Cant follow yourself"
 		m["Success"] = nil
+		fmt.Println("Cant follow yourself")
 		t.Execute(w, m)
 		return
 	}
@@ -111,6 +114,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 		if userPresent == k{
 			m["Error"] = "User already followed!"
 			m["Success"] = nil
+			fmt.Println("User already followed!")
 			t.Execute(w, m)
 			return
 		}
@@ -120,11 +124,13 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 		FollowUser(userPresent,followUser)
 		m["Error"] = nil
 		m["Success"] = "Succesfully followed!"
+		fmt.Println("Succesfully followed!")
 		t.Execute(w, m)
 		return
 	} else {
 		m["Error"] = "Username doesnt exist!"
 		m["Success"] = nil
+		fmt.Println("Username doesnt exist!")
 		t.Execute(w, m)
 		return
 	}
@@ -170,6 +176,7 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 		SaveTweet(tweetUser,tweetContent)
 		m["Error"] = nil
 		m["Success"] = "Succesfully tweeted!"
+		fmt.Println("Succesfully tweeted!")
 		t.Execute(w, m)
 		return
 
@@ -177,6 +184,7 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 
 		m["Error"] = "Enter tweet content"
 		m["Success"] = nil
+		fmt.Println("Enter tweet content")
 		t.Execute(w, m)
 		return
 	}
@@ -208,7 +216,6 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie("token")
 
 	if err != nil {
-		fmt.Println("Cookied not working")
 		redirectToLogin(w)
 		return
 	}
@@ -234,8 +241,7 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		feed = feed + FeedGenerate(followUsername)
 	}
 	if feed != "" {
-		fmt.Println("feed succesfull")
-		fmt.Println(feed)
+		fmt.Println("Feed succesfull")
 		m["Error"] = nil
 		m["Success"] = nil
 		m["Feed"] = feed
@@ -244,6 +250,7 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		m["Error"] = "No feed"
 		m["Success"] = nil
+		fmt.Println("No feed")
 		t.Execute(w, m)
 		return
 	}
@@ -294,7 +301,6 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	} else {
-		fmt.Println("Logout error")
 		redirectToLogin(w)
 		return
 	}
