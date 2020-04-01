@@ -56,6 +56,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		if userPresent.Username != "" {
 			m["Error"] = "Email already in use!"
+			fmt.Println("Email already in use!")
 			t.Execute(w, m)
 			return 
 		}
@@ -64,6 +65,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			m["Error"] = "Error While Hashing Password, Try Again"
+			fmt.Println("Error While Hashing Password, Try Again")
 			t.Execute(w, m)
 			return
 		}
@@ -123,6 +125,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		var err = bcrypt.CompareHashAndPassword([]byte(userPresent.Password), []byte(r.Form["password"][0]))
 		if err != nil {
 			m["Error"] = "Invalid password"
+			fmt.Println("Invalid password")
 			t.Execute(w, m)
 			return			
 		}
@@ -131,6 +134,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		if loginerr != nil {
 			m["Error"] = "Error while generating token,Try again"
+			fmt.Println("Error while generating token,Try again")
 			t.Execute(w, m)
 			return
 		}
@@ -139,13 +143,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Name:    "token",
 			Value:   tokenString,
 		})
-
+		fmt.Println("Login successful")
 		http.Redirect(w, r, "/profile", http.StatusFound)
 		return
 
 	}
 
 	m["Error"] = "Invalid username"
+	fmt.Println("Invalid username")
 	t.Execute(w, m)
 	return	
 }
