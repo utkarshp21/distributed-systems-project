@@ -106,7 +106,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for e := followUser.Followers.Front() ; e != nil ; e.Next(){
+	for e := followUser.Followers.Front() ; e != nil ; e = e.Next(){
 		k := e.Value.(authmodel.User)
 		if userPresent == k{
 			m["Error"] = "User already followed!"
