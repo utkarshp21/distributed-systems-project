@@ -146,11 +146,16 @@ func TestSignoutUser(t *testing.T) {
 		wg.Add(1)
 		go func(v int) {
 			defer wg.Done()
+			authmodel.UsersMux.Lock()
 			signoutUser := authStorage.Users["user" + strconv.Itoa(v)]
+			authmodel.UsersMux.Unlock()
 			SignoutUser(signoutUser)
+			authmodel.UsersMux.Lock()
 			if authStorage.Users["user" + strconv.Itoa(v)].Token != ""{
+				authmodel.UsersMux.Unlock()
 				t.Errorf("Signout unsuccessful for %s",signoutUser.Username)
 			}
+			authmodel.UsersMux.Unlock()
 		}(i)
 	}
 	wg.Wait()
