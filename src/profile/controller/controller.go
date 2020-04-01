@@ -26,13 +26,21 @@ func getToken(c *http.Cookie) (*jwt.Token,error) {
 	return token, err
 }
 
-func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+func redirectToLogin(w http.ResponseWriter){
+	t, _ := template.ParseFiles("login.gtpl")
+	m := map[string]interface{}{}
+	m["Error"] = "Please login to continue!"
+	m["Success"] = nil
+	t.Execute(w, m)
+}
 
+func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+	
 	t, _ := template.ParseFiles("profile.gtpl")
 	c, err := r.Cookie("token")
 
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 
@@ -42,13 +50,12 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 		return
 	}else{
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return 
+		redirectToLogin(w)
+		return
 	}
 }
 
 func FollowUser(userPresent authmodel.User,followUser authmodel.User)  {
-
 	followUser.Followers.PushBack(userPresent)
 	authmodel.UsersMux.Lock()
 	authStorage.Users[followUser.Username] = followUser
@@ -58,13 +65,18 @@ func FollowUser(userPresent authmodel.User,followUser authmodel.User)  {
 
 func FollowHandler(w http.ResponseWriter, r *http.Request) {
 
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return 
+	}
+	
 	m := map[string]interface{}{}
 
 	t, _ := template.ParseFiles("profile.gtpl")
 	c, err := r.Cookie("token")
 
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 
@@ -127,20 +139,25 @@ func SaveTweet(tweetUser string,tweetContent string){
 
 func TweetHandler(w http.ResponseWriter, r *http.Request) {
 
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return 
+	}
+
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
 	c, err := r.Cookie("token")
 
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 
 	token, tokenerr := getToken(c)
 
 	if !token.Valid || tokenerr != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 	r.ParseForm()
@@ -182,20 +199,23 @@ func FeedGenerate(followUser authmodel.User) string {
 }
 
 func FeedHandler(w http.ResponseWriter, r *http.Request) {
+	
+
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
 	c, err := r.Cookie("token")
 
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		fmt.Println("Cookied not working")
+		redirectToLogin(w)
 		return
 	}
 
 	token, tokenerr := getToken(c)
 
 	if !token.Valid || tokenerr != nil{
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 
@@ -242,14 +262,14 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie("token")
 
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 
 	token, tokenerr := getToken(c)
 
 	if !token.Valid || tokenerr != nil {
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 
@@ -269,11 +289,11 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 			Expires: time.Unix(0, 0),
 		})
 		fmt.Println("Logout succesfull")
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	} else {
 		fmt.Println("Logout error")
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToLogin(w)
 		return
 	}
 }
