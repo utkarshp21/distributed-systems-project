@@ -4,9 +4,12 @@ import (
 	authmodel "auth/model"
 	repository "auth/repository"
 	"container/list"
+	"errors"
+	"fmt"
 	"net/http"
 	"golang.org/x/crypto/bcrypt"
 	jwt "github.com/dgrijalva/jwt-go"
+	"time"
 )
 
 func RegisterService (r *http.Request)(string){
@@ -75,4 +78,41 @@ func LoginService(w http.ResponseWriter ,r *http.Request)(string)  {
 
 	}
 	return "Invalid username"
+}
+
+func SignoutService(w http.ResponseWriter, r *http.Request) error{
+
+	c, err := r.Cookie("token")
+	if err != nil{
+		return err
+	}
+
+	tokenString := c.Value
+	token, tokenerr := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method")
+		}
+		return []byte("secret"), nil
+	})
+
+	if !token.Valid || tokenerr != nil {
+		return tokenerr
+	}
+
+	claims, _ := token.Claims.(jwt.MapClaims)
+	signoutUserName := claims["username"].(string)
+	signoutUser, _ := repository.ReturnUser(signoutUserName)
+
+	if signoutUser.Username != "" {
+		signoutUser.Token = ""
+		repository.SetCurrentUser(signoutUser.Username, signoutUser)
+		http.SetCookie(w, &http.Cookie{
+			Name:    "token",
+			Value:   "",
+			Expires: time.Unix(0, 0),
+		})
+		return nil
+	} else {
+		return errors.New("User unavailable")
+	}
 }

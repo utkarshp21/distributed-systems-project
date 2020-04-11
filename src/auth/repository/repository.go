@@ -55,7 +55,3 @@ func SetCurrentUser(username string, user authmodel.User) {
 	<-resultChan
 }
 
-func SignoutUser(signoutUser authmodel.User)  {
-	signoutUser.Token = ""
-	SetCurrentUser(signoutUser.Username, signoutUser)
-}

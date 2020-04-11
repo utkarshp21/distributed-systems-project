@@ -4,6 +4,9 @@ import (
 	//authmodel "auth/model"
 	//repository "auth/repository"
 	service "auth/service"
+	//"fmt"
+	//"time"
+
 	//"container/list"
 	"log"
 	"html/template"
@@ -62,3 +65,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func SignoutHandler(w http.ResponseWriter, r *http.Request) {
+
+	t, _ := template.ParseFiles("login.gtpl")
+	m := map[string]interface{}{}
+
+	err := service.SignoutService(w,r)
+
+	if err != nil {
+		m["Error"] = "Please login to continue!"
+		m["Success"] = nil
+		log.Println("Please login to continue")
+		t.Execute(w, m)
+		return
+	}else{
+		log.Println("Logout succesfull")
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+}
+

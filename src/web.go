@@ -17,6 +17,6 @@ func main() {
     r.HandleFunc("/follow", profileController.FollowHandler)
     r.HandleFunc("/tweet", profileController.TweetHandler)
     r.HandleFunc("/feed", profileController.FeedHandler)
-    r.HandleFunc("/signout", profileController.SignoutHandler)
+    r.HandleFunc("/signout", authController.SignoutHandler)
 	log.Fatal(http.ListenAndServe(":8000", r))
 }

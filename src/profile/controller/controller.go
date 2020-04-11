@@ -3,7 +3,7 @@ package controller
 import (
 	profileRepository "profile/repository"
 	authRepository "auth/repository"
-	"time"
+	//"time"
 	"log"
 	jwt "github.com/dgrijalva/jwt-go"
 	"html/template"
@@ -190,45 +190,6 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 		m["Success"] = nil
 		log.Println("No feed")
 		t.Execute(w, m)
-		return
-	}
-}
-
-
-
-func SignoutHandler(w http.ResponseWriter, r *http.Request) {
-
-	c, err := r.Cookie("token")
-
-	if err != nil {
-		redirectToLogin(w)
-		return
-	}
-
-	token, tokenerr := profileRepository.GetToken(c)
-
-	if !token.Valid || tokenerr != nil {
-		redirectToLogin(w)
-		return
-	}
-
-	claims, _ := token.Claims.(jwt.MapClaims)
-	signoutUserName := claims["username"].(string)
-
-	signoutUser, _ := authRepository.ReturnUser(signoutUserName)
-
-	if signoutUser.Username != "" {
-		authRepository.SignoutUser(signoutUser)
-		http.SetCookie(w, &http.Cookie{
-			Name:    "token",
-			Value:   "",
-			Expires: time.Unix(0, 0),
-		})
-		log.Println("Logout succesfull")
-		http.Redirect(w, r, "/login", http.StatusFound)
-		return
-	} else {
-		redirectToLogin(w)
 		return
 	}
 }
