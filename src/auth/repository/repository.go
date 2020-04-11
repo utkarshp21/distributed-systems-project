@@ -7,16 +7,17 @@ import (
 	"container/list"
 	profilemodel "profile/model"
 	profileStorage "profile/storage"
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
-func CheckUserExists(username string)bool{
+func ReturnUser(username string)(authmodel.User, bool){
 	authmodel.UsersMux.Lock()
-	_, exists := authStorage.Users[username]
+	user, exists := authStorage.Users[username]
 	authmodel.UsersMux.Unlock()
-	return exists
+	return user, exists
 }
 
-func SaveUser(user authmodel.User)error{
+func SaveUser(user authmodel.User)(error){
 
 	//create hash for password
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
@@ -36,4 +37,32 @@ func SaveUser(user authmodel.User)error{
 	profilemodel.TweetsMux.Unlock()
 
 	return nil
+}
+
+func CheckLoginPassword(hashedPassword string, inputPassword string)(error){
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
+	return err
+}
+
+func GenerateToken(user authmodel.User) (string,error){
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username":  user.Username,
+		"firstname": user.FirstName,
+		"lastname":  user.LastName,
+	})
+
+	tokenString, err := token.SignedString([]byte("secret"))
+
+	if err != nil {
+		return "",err
+	}
+
+	user.Token = tokenString
+
+	authmodel.UsersMux.Lock()
+	authStorage.Users[user.Username] = user
+	authmodel.UsersMux.Unlock()
+
+	return tokenString,nil
 }
