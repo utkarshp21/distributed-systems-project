@@ -13,30 +13,24 @@ import (
 func ReturnUser(username string)(authmodel.User, bool){
 	resultChan := make(chan authmodel.User)
 	errChan := make(chan bool)
-	go func() {
-		authmodel.UsersMux.Lock()
-		user, exists := authStorage.Users[username]
-		authmodel.UsersMux.Unlock()
-		resultChan <- user
-		errChan <- exists
-	}()
-
+	go authStorage.ReturnUserDB(username,resultChan,errChan)
 	return <-resultChan, <-errChan
 }
 
 func SaveUser(user authmodel.User){
 	resultChan := make(chan bool)
-	go func() {
-		//save user to storage
-		authmodel.UsersMux.Lock()
-		authStorage.Users[user.Username] = user
-		authmodel.UsersMux.Unlock()
+	go authStorage.SaveUserDB(user,resultChan)
+	<-resultChan
+}
 
-		//create empty tweets list for newly registered user
+//InitialiseTweets will be moved to profile storage later
+
+func InitialiseTweets(user authmodel.User){
+	resultChan := make(chan bool)
+	go func() {
 		profilemodel.TweetsMux.Lock()
 		profileStorage.Tweets[user.Username] = list.New()
 		profilemodel.TweetsMux.Unlock()
-
 		resultChan <- true
 	}()
 	<-resultChan
@@ -44,14 +38,7 @@ func SaveUser(user authmodel.User){
 
 func SetCurrentUser(username string, user authmodel.User) {
 	resultChan := make(chan bool)
-	go func() {
-
-		authmodel.UsersMux.Lock()
-		authStorage.Users[username] = user
-		authmodel.UsersMux.Unlock()
-
-		resultChan <- true
-	}()
+	go authStorage.SetCurrentUserDB(username,user,resultChan)
 	<-resultChan
 }
 
