@@ -5,6 +5,8 @@ import (
 	repository "auth/repository"
 	"container/list"
 	"net/http"
+	"golang.org/x/crypto/bcrypt"
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
 func RegisterService (r *http.Request)(string){
@@ -25,12 +27,13 @@ func RegisterService (r *http.Request)(string){
 		Followers: list.New(),
 	}
 
-	err := repository.SaveUser(registerFromInput)
-
+	hash, err := bcrypt.GenerateFromPassword([]byte(registerFromInput.Password), 5)
 	if err != nil {
 		return "Error While Hashing Password, Try Again"
 	}
+	registerFromInput.Password = string(hash)
 
+	repository.SaveUser(registerFromInput)
 	return ""
 }
 
@@ -42,18 +45,26 @@ func LoginService(w http.ResponseWriter ,r *http.Request)(string)  {
 	user, usernameExists :=  repository.ReturnUser(r.Form["username"][0])
 
 	if usernameExists {
-
-		passowrdErr := repository.CheckLoginPassword(user.Password, r.Form["password"][0])
+		passowrdErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Form["password"][0]))
 
 		if  passowrdErr != nil {
 			return "Invalid password"
 		}
 
-		tokenString, loginErr := repository.GenerateToken(user)
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"username":  user.Username,
+			"firstname": user.FirstName,
+			"lastname":  user.LastName,
+		})
+
+		tokenString, loginErr := token.SignedString([]byte("secret"))
 
 		if loginErr != nil {
 			return "Error while generating token,Try again"
 		}
+
+		user.Token = tokenString
+		repository.SetCurrentUser(user.Username, user)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "token",

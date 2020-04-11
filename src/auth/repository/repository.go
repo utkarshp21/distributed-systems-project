@@ -3,72 +3,56 @@ package repository
 import (
 	authStorage "auth/storage"
 	authmodel "auth/model"
-	"golang.org/x/crypto/bcrypt"
 	"container/list"
 	profilemodel "profile/model"
 	profileStorage "profile/storage"
-	jwt "github.com/dgrijalva/jwt-go"
+	//jwt "github.com/dgrijalva/jwt-go"
+	//"golang.org/x/crypto/bcrypt"
 )
 
 func ReturnUser(username string)(authmodel.User, bool){
-	authmodel.UsersMux.Lock()
-	user, exists := authStorage.Users[username]
-	authmodel.UsersMux.Unlock()
-	return user, exists
+	resultChan := make(chan authmodel.User)
+	errChan := make(chan bool)
+	go func() {
+		authmodel.UsersMux.Lock()
+		user, exists := authStorage.Users[username]
+		authmodel.UsersMux.Unlock()
+		resultChan <- user
+		errChan <- exists
+	}()
+
+	return <-resultChan, <-errChan
 }
 
-func SaveUser(user authmodel.User)(error){
+func SaveUser(user authmodel.User){
+	resultChan := make(chan bool)
+	go func() {
+		//save user to storage
+		authmodel.UsersMux.Lock()
+		authStorage.Users[user.Username] = user
+		authmodel.UsersMux.Unlock()
 
-	//create hash for password
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
-	if err != nil {
-		return err
-	}
-	user.Password = string(hash)
+		//create empty tweets list for newly registered user
+		profilemodel.TweetsMux.Lock()
+		profileStorage.Tweets[user.Username] = list.New()
+		profilemodel.TweetsMux.Unlock()
 
-	//save user to storage
-	authmodel.UsersMux.Lock()
-	authStorage.Users[user.Username] = user
-	authmodel.UsersMux.Unlock()
-
-	//create empty tweets list for newly registered user
-	profilemodel.TweetsMux.Lock()
-	profileStorage.Tweets[user.Username] = list.New()
-	profilemodel.TweetsMux.Unlock()
-
-	return nil
+		resultChan <- true
+	}()
+	<-resultChan
 }
 
-func CheckLoginPassword(hashedPassword string, inputPassword string)(error){
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
-	return err
-}
+func SetCurrentUser(username string, user authmodel.User) {
+	resultChan := make(chan bool)
+	go func() {
 
-func SetCurrentUser(username string, user authmodel.User){
-	authmodel.UsersMux.Lock()
-	authStorage.Users[username] = user
-	authmodel.UsersMux.Unlock()
-}
+		authmodel.UsersMux.Lock()
+		authStorage.Users[username] = user
+		authmodel.UsersMux.Unlock()
 
-func GenerateToken(user authmodel.User) (string,error){
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username":  user.Username,
-		"firstname": user.FirstName,
-		"lastname":  user.LastName,
-	})
-
-	tokenString, err := token.SignedString([]byte("secret"))
-
-	if err != nil {
-		return "",err
-	}
-
-	user.Token = tokenString
-
-	SetCurrentUser(user.Username, user)
-
-	return tokenString,nil
+		resultChan <- true
+	}()
+	<-resultChan
 }
 
 func SignoutUser(signoutUser authmodel.User)  {
