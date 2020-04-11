@@ -3,40 +3,16 @@ package controller
 import (
 	authmodel "auth/model"
 	authStorage "auth/storage"
+	repository "auth/repository"
 	"container/list"
 	"fmt"
+	"log"
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"net/http"
-	profilemodel "profile/model"
-	profileStorage "profile/storage"
 )
 
-func SaveUser(r *http.Request) (authmodel.User,error){
-
-	r.ParseForm()
-	user := authmodel.User{
-		Username:r.Form["username"][0],
-		Password: r.Form["password"][0],
-		FirstName: r.Form["firstname"][0],
-		LastName: r.Form["lastname"][0],
-		Followers: list.New(),
-	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
-
-	if err != nil {
-		return user,err
-	}
-
-	user.Password = string(hash)
-
-	authmodel.UsersMux.Lock()
-	authStorage.Users[user.Username] = user
-	authmodel.UsersMux.Unlock()
-
-	return user,nil
-}
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -50,31 +26,35 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
     }else{
 		r.ParseForm()
 
-		authmodel.UsersMux.Lock()
-		userPresent := authStorage.Users[r.Form["username"][0]]
-		authmodel.UsersMux.Unlock()
+		usernameExists :=  repository.CheckUserExists(r.Form["username"][0])
 
-		if userPresent.Username != "" {
+		if usernameExists == true {
 			m["Error"] = "Email already in use!"
-			fmt.Println("Email already in use!")
+			log.Println("Email already in use!")
 			t.Execute(w, m)
 			return 
 		}
 
-		user, err := SaveUser(r)
+		r.ParseForm()
+		
+		registerFromInput := authmodel.User{
+			Username: r.Form["username"][0],
+			Password: r.Form["password"][0],
+			FirstName: r.Form["firstname"][0],
+			LastName: r.Form["lastname"][0],
+			Followers: list.New(),
+		}
+
+		err := repository.SaveUser(registerFromInput)
 
 		if err != nil {
 			m["Error"] = "Error While Hashing Password, Try Again"
-			fmt.Println("Error While Hashing Password, Try Again")
+			log.Println("Error While Hashing Password, Try Again")
 			t.Execute(w, m)
 			return
 		}
 
-		profilemodel.TweetsMux.Lock()
-		profileStorage.Tweets[user.Username] = list.New()
-		profilemodel.TweetsMux.Unlock()
-
-		fmt.Println("Registered succesfully",user.Username)
+		log.Println("User Registered succesfully")
 		http.Redirect(w, r, "/login", http.StatusFound)
 	}
 	
