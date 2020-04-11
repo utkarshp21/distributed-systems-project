@@ -1,9 +1,10 @@
 package controller
 
 import (
-	authmodel "auth/model"
+	//authmodel "auth/model"
 	repository "auth/repository"
-	"container/list"
+	service "auth/service"
+	//"container/list"
 	"log"
 	"html/template"
 	"net/http"
@@ -20,32 +21,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, m)
 		return 
     }else{
-		r.ParseForm()
 
-		_, usernameExists :=  repository.ReturnUser(r.Form["username"][0])
-		
-		if usernameExists {
-			m["Error"] = "Email already in use!"
-			log.Println("Email already in use!")
-			t.Execute(w, m)
-			return 
-		}
+    	errMsg := service.RegisterService(r)
 
-		r.ParseForm()
-		
-		registerFromInput := authmodel.User{
-			Username: r.Form["username"][0],
-			Password: r.Form["password"][0],
-			FirstName: r.Form["firstname"][0],
-			LastName: r.Form["lastname"][0],
-			Followers: list.New(),
-		}
-
-		err := repository.SaveUser(registerFromInput)
-
-		if err != nil {
-			m["Error"] = "Error While Hashing Password, Try Again"
-			log.Println("Error While Hashing Password, Try Again")
+    	if errMsg != "" {
+			m["Error"] = errMsg
+			log.Println(errMsg)
 			t.Execute(w, m)
 			return
 		}
