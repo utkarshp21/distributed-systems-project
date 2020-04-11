@@ -37,6 +37,7 @@ func RegisterService (r *http.Request)(string){
 	registerFromInput.Password = string(hash)
 
 	repository.SaveUser(registerFromInput)
+	repository.InitialiseTweets(registerFromInput)
 	return ""
 }
 
