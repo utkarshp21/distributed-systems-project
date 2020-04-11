@@ -44,6 +44,12 @@ func CheckLoginPassword(hashedPassword string, inputPassword string)(error){
 	return err
 }
 
+func SetCurrentUser(username string, user authmodel.User){
+	authmodel.UsersMux.Lock()
+	authStorage.Users[username] = user
+	authmodel.UsersMux.Unlock()
+}
+
 func GenerateToken(user authmodel.User) (string,error){
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -60,9 +66,12 @@ func GenerateToken(user authmodel.User) (string,error){
 
 	user.Token = tokenString
 
-	authmodel.UsersMux.Lock()
-	authStorage.Users[user.Username] = user
-	authmodel.UsersMux.Unlock()
+	SetCurrentUser(user.Username, user)
 
 	return tokenString,nil
+}
+
+func SignoutUser(signoutUser authmodel.User)  {
+	signoutUser.Token = ""
+	SetCurrentUser(signoutUser.Username, signoutUser)
 }
