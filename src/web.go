@@ -19,4 +19,5 @@ func main() {
     r.HandleFunc("/feed", profileController.FeedHandler)
     r.HandleFunc("/signout", authController.SignoutHandler)
 	log.Fatal(http.ListenAndServe(":8000", r))
+
 }
