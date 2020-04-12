@@ -1,4 +1,4 @@
-package service
+package main
 
 import (
 	authmodel "auth/model"
@@ -10,7 +10,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	jwt "github.com/dgrijalva/jwt-go"
 	"time"
+	
+	"auth/authpb"
+	"context"
+	"google.golang.org/grpc"
+	"log"
+	"net"
 )
+
 
 func RegisterService (r *http.Request)(string){
 
@@ -116,4 +123,78 @@ func SignoutService(w http.ResponseWriter, r *http.Request) error{
 	} else {
 		return errors.New("User unavailable")
 	}
+}
+
+type server struct {
+
+}
+
+func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*authpb.RegisterResponse, error) {
+	
+	log.Printf("Step1!!!")
+
+	_, usernameExists :=  repository.ReturnUser(request.Username)
+
+	if usernameExists {
+		response := &authpb.RegisterResponse{
+			Message: "User already exists",
+		}
+		return response, nil
+	}
+
+	registerFromInput := authmodel.User{
+		Username: request.Username,
+		Password: request.Password,
+		FirstName: request.Firstname,
+		LastName: request.Lastname,
+		Followers: list.New(),
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(registerFromInput.Password), 5)
+	if err != nil {
+		response := &authpb.RegisterResponse{
+			Message: "Error While Hashing Password, Try Again",
+		}
+		return response, nil
+	}
+	registerFromInput.Password = string(hash)
+
+	repository.SaveUser(registerFromInput)
+	repository.InitialiseTweets(registerFromInput)
+	
+
+	response := &authpb.RegisterResponse{
+		Message: "Successfully registered",
+	}
+
+	return response, nil
+}
+
+
+func (*server) Hello(ctx context.Context, request *authpb.HelloRequest) (*authpb.HelloResponse, error) {
+	
+	log.Printf("Step2!!!")
+
+	firstname := request.Firstname
+	lastname := request.Lastname
+	response := &authpb.HelloResponse{
+		Greeting: "Hello " + firstname + lastname,
+	}
+	return response, nil
+}
+
+func main() {
+	address := "0.0.0.0:50051"
+	lis, err := net.Listen("tcp", address)
+	if err != nil {
+		log.Fatalf("Error %v", err)
+	}
+	fmt.Printf("Server is listening on %v ...", address)
+
+	s := grpc.NewServer()
+	authpb.RegisterHelloServiceServer(s, &server{})
+
+	authpb.RegisterRegisterServiceServer(s, &server{})
+
+	s.Serve(lis)
 }
