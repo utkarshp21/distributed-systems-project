@@ -65,6 +65,35 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
+	m := map[string]interface{}{}
+	t, _ := template.ParseFiles("profile.gtpl")
+
+	loginerr, err := service.UnfollowService(r)
+
+	if loginerr != nil {
+		redirectToLogin(w)
+		return
+	}else if err != "" {
+		m["Error"] = err
+		m["Success"] = nil
+		log.Println(err)
+		t.Execute(w, m)
+		return
+	}else {
+		m["Error"] = nil
+		m["Success"] = "Succesfully unfollowed"
+		log.Println("Succesfully unfollowed")
+		t.Execute(w, m)
+		return
+	}
+}
+
 func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		http.Redirect(w, r, "/profile", http.StatusFound)
