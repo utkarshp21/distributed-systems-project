@@ -1,13 +1,14 @@
 package controller
 
 import (
-	profileRepository "profile/repository"
-	authRepository "auth/repository"
+	//profileRepository "profile/repository"
+	//authRepository "auth/repository"
 	//"time"
 	"log"
-	jwt "github.com/dgrijalva/jwt-go"
+	//jwt "github.com/dgrijalva/jwt-go"
 	"html/template"
 	"net/http"
+	service "profile/service"
 )
 
 func redirectToLogin(w http.ResponseWriter){
@@ -22,21 +23,15 @@ func redirectToLogin(w http.ResponseWriter){
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	
 	t, _ := template.ParseFiles("profile.gtpl")
-	c, err := r.Cookie("token")
+
+	err := service.ProfileService(r)
 
 	if err != nil {
 		redirectToLogin(w)
 		return
-	}
-
-	token, tokenerr := profileRepository.GetToken(c)
-
-	if token.Valid && tokenerr == nil{
+	}else{
 		log.Println("Profile loaded succesfully")
 		t.Execute(w, nil)
-		return
-	}else{
-		redirectToLogin(w)
 		return
 	}
 }
@@ -47,61 +42,24 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/profile", http.StatusFound)
 		return 
 	}
-	
 	m := map[string]interface{}{}
-
 	t, _ := template.ParseFiles("profile.gtpl")
-	c, err := r.Cookie("token")
 
-	if err != nil {
+	loginerr, err := service.FollowService(r)
+
+	if loginerr != nil {
 		redirectToLogin(w)
 		return
-	}
-
-	token, tokenerr := profileRepository.GetToken(c)
-
-	if !token.Valid || tokenerr != nil{
-		redirectToLogin(w)
-		return
-	}
-
-	r.ParseForm()
-
-	userPresent, _ := authRepository.ReturnUser(r.Form["username"][0])
-
-	claims, _ := token.Claims.(jwt.MapClaims)
-
-	followUser, _ := authRepository.ReturnUser(claims["username"].(string))
-
-	if userPresent == followUser{
-		m["Error"] = "Cant follow yourself"
+	}else if err != "" {
+		m["Error"] = err
 		m["Success"] = nil
-		log.Println("Cant follow yourself")
+		log.Println(err)
 		t.Execute(w, m)
 		return
-	}
-
-	alreadyFollowed := profileRepository.CheckIfUserAlreadyFollowed(followUser, userPresent)
-
-	if alreadyFollowed {
-		m["Error"] = "User already followed!"
-		m["Success"] = nil
-		log.Println("User already followed!")
-		t.Execute(w, m)
-		return
-	}
-	
-	if userPresent.Username != "" {
-		profileRepository.FollowUser(userPresent,followUser)
+	}else {
 		m["Error"] = nil
-		m["Success"] = "Succesfully followed!"
-		log.Println("Succesfully followed!")
-		t.Execute(w, m)
-		return
-	} else {
-		m["Error"] = "Username doesnt exist!"
-		m["Success"] = nil
-		log.Println("Username doesnt exist!")
+		m["Success"] = "Succesfully followed"
+		log.Println("Succesfully followed")
 		t.Execute(w, m)
 		return
 	}
@@ -116,79 +74,51 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
-	c, err := r.Cookie("token")
+	loginerr, err := service.TweetService(r)
 
-	if err != nil {
+	if loginerr != nil {
 		redirectToLogin(w)
 		return
-	}
-
-	token, tokenerr := profileRepository.GetToken(c)
-
-	if !token.Valid || tokenerr != nil {
-		redirectToLogin(w)
-		return
-	}
-	r.ParseForm()
-
-	tweetContent := r.Form["tweet"][0]
-
-	if tweetContent != "" {
-		claims, _ := token.Claims.(jwt.MapClaims)
-		tweetUser := claims["username"].(string)
-		profileRepository.SaveTweet(tweetUser,tweetContent)
-		m["Error"] = nil
-		m["Success"] = "Succesfully tweeted!"
-		log.Println("Succesfully tweeted!")
+	}else if err != "" {
+		m["Error"] = err
+		m["Success"] = nil
+		log.Println(err)
 		t.Execute(w, m)
 		return
-
-	} else {
-
-		m["Error"] = "Enter tweet content"
-		m["Success"] = nil
-		log.Println("Enter tweet content")
+	}else {
+		m["Error"] = nil
+		m["Success"] = "Succesfully tweeted"
+		log.Println("Succesfully tweeted")
 		t.Execute(w, m)
 		return
 	}
 }
 
 func FeedHandler(w http.ResponseWriter, r *http.Request) {
-	
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
+
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}
 
-	c, err := r.Cookie("token")
+	loginerr, err, feed := service.FeedService(r)
 
-	if err != nil {
+	if loginerr != nil {
 		redirectToLogin(w)
 		return
-	}
-
-	token, tokenerr := profileRepository.GetToken(c)
-
-	if !token.Valid || tokenerr != nil{
-		redirectToLogin(w)
+	}else if err != "" {
+		m["Error"] = err
+		m["Success"] = nil
+		log.Println(err)
+		t.Execute(w, m)
 		return
-	}
-
-	claims, _ := token.Claims.(jwt.MapClaims)
-
-	feedUser, _ := authRepository.ReturnUser(claims["username"].(string))
-
-	feed := profileRepository.FeedGenerator(feedUser)
-
-	if feed != "" {
-		log.Println("Feed succesfull")
+	}else {
 		m["Error"] = nil
 		m["Success"] = nil
 		m["Feed"] = feed
-		t.Execute(w, m)
-		return
-	} else {
-		m["Error"] = "No feed"
-		m["Success"] = nil
-		log.Println("No feed")
+		log.Println("Feed Succesfull")
 		t.Execute(w, m)
 		return
 	}

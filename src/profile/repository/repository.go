@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"container/list"
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
 	"net/http"
@@ -44,30 +45,10 @@ func SaveTweet(tweetUser string,tweetContent string){
 	profilemodel.TweetsMux.Unlock()
 }
 
-func GetTopFiveTweets(followUsername string)(string){
+func GetTweetList(followUsername string)(*list.List) {
 	profilemodel.TweetsMux.Lock()
 	tweetList := profileStorage.Tweets[followUsername]
 	profilemodel.TweetsMux.Unlock()
-	
-	numOfTweets := 5
-	feed := ""
-	for k := tweetList.Back(); k != nil && numOfTweets > 0; k = k.Prev() {
-		numOfTweets = numOfTweets - 1
-		feed = feed + k.Value.(string) + "\n"
-	}
-	if feed != ""{
-		feed = "Top 5 tweets from "+ followUsername + " : \n" + feed
-	}
-	return feed
-	
+	return tweetList
 }
 
-func FeedGenerator(feedUser authmodel.User)(string){
-	feed := ""
-	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
-		followUser := e.Value.(authmodel.User)
-		followUsername := followUser.Username
-		feed = feed + GetTopFiveTweets(followUsername)
-	}
-	return feed
-}
