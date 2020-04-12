@@ -29,7 +29,11 @@ func main() {
 	
 	request := &authpb.RegisterRequest{Firstname: "Utkarsh", Lastname:"Prakash", Username:"up@gmail.com", Password:"up"}
 	
-	resp, _ := client.Register(context.Background(), request)
+	resp, err := client.Register(context.Background(), request)
 
-	fmt.Printf("Receive Regiseter response => [%v]", resp.Message)
+	if err != nil{
+		fmt.Printf("Receive Error Regiseter response => [%v]", err)
+	}else{
+		fmt.Printf("Receive  Regiseter response => [%v]", resp.Message)
+	}
 }

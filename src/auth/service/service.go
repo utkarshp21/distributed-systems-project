@@ -14,6 +14,8 @@ import (
 	"auth/authpb"
 	"context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/codes"
 	"log"
 	"net"
 )
@@ -131,15 +133,14 @@ type server struct {
 
 func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*authpb.RegisterResponse, error) {
 	
-	log.Printf("Step1!!!")
-
 	_, usernameExists :=  repository.ReturnUser(request.Username)
 
 	if usernameExists {
-		response := &authpb.RegisterResponse{
-			Message: "User already exists",
-		}
-		return response, nil
+		// response := &authpb.RegisterResponse{
+		// 	Message: "User already exists",
+		// }
+		st := status.New(codes.InvalidArgument, "User already exists")
+		return nil, st.Err()
 	}
 
 	registerFromInput := authmodel.User{
@@ -152,10 +153,8 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(registerFromInput.Password), 5)
 	if err != nil {
-		response := &authpb.RegisterResponse{
-			Message: "Error While Hashing Password, Try Again",
-		}
-		return response, nil
+		st := status.New(codes.Unknown, "Error While Hashing Password, Try Again")
+		return nil, st.Err()
 	}
 	registerFromInput.Password = string(hash)
 
@@ -193,7 +192,6 @@ func main() {
 
 	s := grpc.NewServer()
 	authpb.RegisterHelloServiceServer(s, &server{})
-
 	authpb.RegisterRegisterServiceServer(s, &server{})
 
 	s.Serve(lis)
