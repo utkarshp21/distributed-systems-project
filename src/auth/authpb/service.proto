@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package authproto;
+option go_package = "authpb";
+
+message helloRequest {
+    string firstname = 1;
+    string lastname = 2;
+}
+
+message helloResponse {
+    string greeting = 1;
+}
+
+service helloService {
+    rpc Hello(helloRequest) returns (helloResponse) {};
+}
+
+message registerRequest {
+    string username = 1;
+    string password = 2;
+    string firstname = 3;
+    string lastname = 4;
+}
+
+message registerResponse {
+    string message = 1;
+}
+
+service registerService {
+    rpc Register(registerRequest) returns (registerResponse) {};
+}

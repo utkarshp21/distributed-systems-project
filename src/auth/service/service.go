@@ -136,9 +136,6 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 	_, usernameExists :=  repository.ReturnUser(request.Username)
 
 	if usernameExists {
-		// response := &authpb.RegisterResponse{
-		// 	Message: "User already exists",
-		// }
 		st := status.New(codes.InvalidArgument, "User already exists")
 		return nil, st.Err()
 	}
