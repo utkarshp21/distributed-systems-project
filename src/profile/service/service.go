@@ -9,6 +9,7 @@ import (
 	authmodel "auth/model"
 	jwt "github.com/dgrijalva/jwt-go"
 	"net/http"
+	//authStorage "auth/storage"
 )
 
 func GetToken(c *http.Cookie) (*jwt.Token,error) {
@@ -74,6 +75,48 @@ func FollowService(r *http.Request) (error,string) {
 	} else {
 		return nil, "Username doesnt exist"
 	}
+}
+
+func UnfollowService(r *http.Request) (error,string) {
+
+	c, err := r.Cookie("token")
+
+	if err != nil {
+		return err, ""
+	}
+
+	token, tokenerr := GetToken(c)
+	if !token.Valid && tokenerr != nil{
+		return errors.New("Token error"), ""
+	}
+
+	r.ParseForm()
+	userPresent, _ := authRepository.ReturnUser(r.Form["username"][0])
+	claims, _ := token.Claims.(jwt.MapClaims)
+	unfollowUser, _ := authRepository.ReturnUser(claims["username"].(string))
+
+	if userPresent == unfollowUser{
+		return nil, "Cant unfollow yourself"
+	}
+
+	if userPresent.Username == "" {
+		return nil, "Username doesnt exist"
+	}
+
+	for e := unfollowUser.Followers.Front() ; e != nil ; e = e.Next(){
+		k := e.Value.(authmodel.User)
+		if userPresent == k{
+			removed := unfollowUser.Followers.Remove(e)
+			fmt.Println("Removed user",removed)
+			if unfollowUser.Followers.Front() == nil{
+				fmt.Println("Followers after removal zero")
+			}
+			authRepository.SaveUser(unfollowUser)
+			return nil, ""
+		}
+	}
+
+	return nil, "Follow user first"
 }
 
 func TweetService(r *http.Request) (error,string) {

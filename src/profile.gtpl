@@ -10,6 +10,10 @@
             Email id:<input type="text" name="username">
             <input type="submit" value="Follow">
         </form>
+        <form action="/unfollow" method="post">
+            Email id:<input type="text" name="username">
+            <input type="submit" value="Unfollow">
+         </form>
          <form action="/tweet" method="post">
             Enter text:<input type="text" name="tweet">
             <input type="submit" value="Tweet">
