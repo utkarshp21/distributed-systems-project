@@ -20,12 +20,8 @@ message feedResponse {
   string resparm2 = 2;
 }
 
-service registerService {
+service FollowService {
   rpc FollowService(profileRequest) returns (profileResponse) {};
-  rpc UnfollowService(profileRequest) returns (profileResponse) {};
-  rpc TweetService(profileRequest) returns (profileResponse) {};
-  rpc FeedService(feedRequest) returns (feedResponse) {};
 }
-
 
 

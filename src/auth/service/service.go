@@ -5,7 +5,7 @@ import (
 	repository "auth/repository"
 	"container/list"
 	"fmt"
-
+	//authStorage "auth/storage"
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 
@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
 )
 
 type server struct {
@@ -129,6 +130,41 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 	}
 }
 
+func (*server) FollowService(ctx context.Context, request *authpb.ProfileRequest) (*authpb.ProfileResponse, error) {
+
+	//fmt.Println(request.GetReqparm1(),request.GetReqparm2())
+	userPresent, _ := repository.ReturnUser(request.GetReqparm1())
+	followUser, _ := repository.ReturnUser(request.GetReqparm2())
+
+	//xxx, _ := authRepository.ReturnUser("uf247@nyu.edu")
+	//fmt.Println(userPresent,followUser)
+	//fmt.Println(authStorage.Users)
+
+	if userPresent == followUser{
+		response := &authpb.ProfileResponse{Resparm1: "Cant follow yourself"}
+		return response, nil
+	}
+
+	for e := followUser.Followers.Front() ; e != nil ; e = e.Next(){
+		k := e.Value.(authmodel.User)
+		if userPresent == k{
+			response := &authpb.ProfileResponse{Resparm1: "User already followed"}
+			return response, nil
+		}
+	}
+
+	if userPresent.Username != "" {
+		followUser.Followers.PushBack(userPresent)
+		repository.SaveUser(followUser)
+		response := &authpb.ProfileResponse{Resparm1: ""}
+		return response, nil
+	} else {
+		response := &authpb.ProfileResponse{Resparm1: "Username doesnt exist"}
+		return response, nil
+	}
+
+}
+
 func main() {
 	address := "0.0.0.0:50051"
 	lis, err := net.Listen("tcp", address)
@@ -141,6 +177,7 @@ func main() {
 	authpb.RegisterRegisterServiceServer(s, &server{})
 	authpb.RegisterLoginServiceServer(s, &server{})
 	authpb.RegisterLogoutServiceServer(s, &server{})
+	authpb.RegisterFollowServiceServer(s, &server{})
 
 	s.Serve(lis)
 }
