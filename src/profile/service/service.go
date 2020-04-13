@@ -9,7 +9,7 @@
 //
 //	//"errors"
 //	//"fmt"
-//	//profileRepository "profile/repository"
+//	profileRepository "profile/repository"
 //	authRepository "auth/repository"
 //	authmodel "auth/model"
 //	//"google.golang.org/grpc"
@@ -139,40 +139,40 @@
 ////	}
 ////}
 ////
-////func UnfollowService(userPresentUsername string,unfollowuserUsername string) (string) {
+//func UnfollowService(userPresentUsername string,unfollowuserUsername string) (string) {
+
+	//userPresent, _ := authRepository.ReturnUser(userPresentUsername)
+	//unfollowUser, _ := authRepository.ReturnUser(unfollowuserUsername)
+	//
+	//if userPresent == unfollowUser{
+	//	return "Cant unfollow yourself"
+	//}
+	//
+	//if userPresent.Username == "" {
+	//	return "Username doesnt exist"
+	//}
+	//
+	//for e := unfollowUser.Followers.Front() ; e != nil ; e = e.Next(){
+	//	k := e.Value.(authmodel.User)
+	//	if userPresent == k{
+	//		unfollowUser.Followers.Remove(e)
+	//		authRepository.SaveUser(unfollowUser)
+	//		return ""
+	//	}
+	//}
+	//
+	//return "Follow user first"
+//}
 ////
-////	userPresent, _ := authRepository.ReturnUser(userPresentUsername)
-////	unfollowUser, _ := authRepository.ReturnUser(unfollowuserUsername)
-////
-////	if userPresent == unfollowUser{
-////		return "Cant unfollow yourself"
-////	}
-////
-////	if userPresent.Username == "" {
-////		return "Username doesnt exist"
-////	}
-////
-////	for e := unfollowUser.Followers.Front() ; e != nil ; e = e.Next(){
-////		k := e.Value.(authmodel.User)
-////		if userPresent == k{
-////			unfollowUser.Followers.Remove(e)
-////			authRepository.SaveUser(unfollowUser)
-////			return ""
-////		}
-////	}
-////
-////	return "Follow user first"
-////}
-////
-////func TweetService(tweetContent string, tweetUser string) (string) {
-////
-////	if tweetContent != "" {
-////		profileRepository.SaveTweet(tweetUser,tweetContent)
-////		return ""
-////	} else {
-////		return "Enter tweet content"
-////	}
-////}
+func TweetService(tweetContent string, tweetUser string) (string) {
+
+	if tweetContent != "" {
+		profileRepository.SaveTweet(tweetUser,tweetContent)
+		return ""
+	} else {
+		return "Enter tweet content"
+	}
+}
 ////
 ////func FeedService(feedUserUsename string)(string,string){
 ////

@@ -65,3 +65,15 @@ message feedResponse {
 service FollowService {
     rpc FollowService(profileRequest) returns (profileResponse) {};
 }
+
+service UnfollowService{
+    rpc UnfollowService(profileRequest) returns (profileResponse) {};
+}
+
+service TweetService{
+    rpc TweetService(profileRequest) returns (profileResponse) {};
+}
+
+service FeedService{
+    rpc FeedService(feedRequest) returns (feedResponse) {};
+}

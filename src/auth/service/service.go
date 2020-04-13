@@ -8,6 +8,7 @@ import (
 	//authStorage "auth/storage"
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
+	profileRepository "profile/repository"
 
 	"auth/authpb"
 	"context"
@@ -132,13 +133,8 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 
 func (*server) FollowService(ctx context.Context, request *authpb.ProfileRequest) (*authpb.ProfileResponse, error) {
 
-	//fmt.Println(request.GetReqparm1(),request.GetReqparm2())
 	userPresent, _ := repository.ReturnUser(request.GetReqparm1())
 	followUser, _ := repository.ReturnUser(request.GetReqparm2())
-
-	//xxx, _ := authRepository.ReturnUser("uf247@nyu.edu")
-	//fmt.Println(userPresent,followUser)
-	//fmt.Println(authStorage.Users)
 
 	if userPresent == followUser{
 		response := &authpb.ProfileResponse{Resparm1: "Cant follow yourself"}
@@ -165,6 +161,49 @@ func (*server) FollowService(ctx context.Context, request *authpb.ProfileRequest
 
 }
 
+func (*server) UnfollowService(ctx context.Context, request *authpb.ProfileRequest) (*authpb.ProfileResponse, error) {
+
+	userPresent, _ := repository.ReturnUser(request.GetReqparm1())
+	unfollowUser, _ := repository.ReturnUser(request.GetReqparm2())
+
+	if userPresent == unfollowUser{
+		response := &authpb.ProfileResponse{Resparm1: "Cant unfollow yourself"}
+		return response, nil
+	}
+
+	if userPresent.Username == "" {
+		response := &authpb.ProfileResponse{Resparm1: "Username doesnt exist"}
+		return response, nil	}
+
+	for e := unfollowUser.Followers.Front() ; e != nil ; e = e.Next(){
+		k := e.Value.(authmodel.User)
+		if userPresent == k{
+			unfollowUser.Followers.Remove(e)
+			repository.SaveUser(unfollowUser)
+			response := &authpb.ProfileResponse{Resparm1: ""}
+			return response, nil
+		}
+	}
+
+	response := &authpb.ProfileResponse{Resparm1: "Follow user first"}
+	return response, nil
+}
+
+func (*server) TweetService(ctx context.Context, request *authpb.ProfileRequest) (*authpb.ProfileResponse, error) {
+
+	tweetContent := request.GetReqparm1()
+	tweetUser := request.GetReqparm2()
+
+	if tweetContent != "" {
+		profileRepository.SaveTweet(tweetUser,tweetContent)
+		response := &authpb.ProfileResponse{Resparm1: ""}
+		return response, nil
+	} else {
+		response := &authpb.ProfileResponse{Resparm1: "Enter tweet content"}
+		return response, nil
+	}
+}
+
 func main() {
 	address := "0.0.0.0:50051"
 	lis, err := net.Listen("tcp", address)
@@ -178,6 +217,8 @@ func main() {
 	authpb.RegisterLoginServiceServer(s, &server{})
 	authpb.RegisterLogoutServiceServer(s, &server{})
 	authpb.RegisterFollowServiceServer(s, &server{})
+	authpb.RegisterUnfollowServiceServer(s, &server{})
+	authpb.RegisterTweetServiceServer(s, &server{})
 
 	s.Serve(lis)
 }

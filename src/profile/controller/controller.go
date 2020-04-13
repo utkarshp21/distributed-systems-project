@@ -62,7 +62,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		http.Redirect(w, r, "/profile", http.StatusFound)
-		return 
+		return
 	}
 	m := map[string]interface{}{}
 	t, _ := template.ParseFiles("profile.gtpl")
@@ -85,8 +85,6 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	userPresentUsername := r.Form["username"][0]
 	followuserUsername := claims["username"].(string)
 
-	//fmt.Println(userPresentUsername,followuserUsername)
-
 	var opts = grpc.WithInsecure()
 	var cc, ccerr = grpc.Dial("localhost:50051", opts)
 
@@ -99,10 +97,8 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	client := authpb.NewFollowServiceClient(cc)
 
 	request := &authpb.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: followuserUsername}
-
-	fmt.Println(request.GetReqparm1(),request.GetReqparm2())
 	response, _ := client.FollowService(context.Background(),request)
-	fmt.Println("hiiiiiii")
+
 	if response.GetResparm1() != "" {
 		m["Error"] = response.GetResparm1()
 		m["Success"] = nil
@@ -118,93 +114,117 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
-//
-//	if r.Method == "GET" {
-//		http.Redirect(w, r, "/profile", http.StatusFound)
-//		return
-//	}
-//	m := map[string]interface{}{}
-//	t, _ := template.ParseFiles("profile.gtpl")
-//
-//	c, err := r.Cookie("token")
-//
-//	if err != nil {
-//		redirectToLogin(w)
-//		return
-//	}
-//
-//	token, tokenerr := GetToken(c)
-//	if !token.Valid && tokenerr != nil{
-//		redirectToLogin(w)
-//		return
-//	}
-//
-//	r.ParseForm()
-//	claims, _ := token.Claims.(jwt.MapClaims)
-//	userPresentUsername := r.Form["username"][0]
-//	unfollowuserUsername := claims["username"].(string)
-//
-//	srvErr := service.UnfollowService(userPresentUsername,unfollowuserUsername)
-//
-//	if srvErr != "" {
-//		m["Error"] = srvErr
-//		m["Success"] = nil
-//		log.Println(srvErr)
-//		t.Execute(w, m)
-//		return
-//	}else {
-//		m["Error"] = nil
-//		m["Success"] = "Succesfully unfollowed"
-//		log.Println("Succesfully unfollowed")
-//		t.Execute(w, m)
-//		return
-//	}
-//}
-//
-//func TweetHandler(w http.ResponseWriter, r *http.Request) {
-//	if r.Method == "GET" {
-//		http.Redirect(w, r, "/profile", http.StatusFound)
-//		return
-//	}
-//
-//	t, _ := template.ParseFiles("profile.gtpl")
-//	m := map[string]interface{}{}
-//
-//	c, err := r.Cookie("token")
-//
-//	if err != nil {
-//		redirectToLogin(w)
-//		return
-//	}
-//
-//	token, tokenerr := GetToken(c)
-//	if !token.Valid && tokenerr != nil{
-//		redirectToLogin(w)
-//		return
-//	}
-//
-//	r.ParseForm()
-//	tweetContent := r.Form["tweet"][0]
-//	claims, _ := token.Claims.(jwt.MapClaims)
-//	tweetUserUsername := claims["username"].(string)
-//
-//	srvErr := service.TweetService(tweetContent,tweetUserUsername)
-//
-//	if srvErr != "" {
-//		m["Error"] = srvErr
-//		m["Success"] = nil
-//		log.Println(srvErr)
-//		t.Execute(w, m)
-//		return
-//	}else {
-//		m["Error"] = nil
-//		m["Success"] = "Succesfully tweeted"
-//		log.Println("Succesfully tweeted")
-//		t.Execute(w, m)
-//		return
-//	}
-//}
+func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
+	m := map[string]interface{}{}
+	t, _ := template.ParseFiles("profile.gtpl")
+
+	c, err := r.Cookie("token")
+
+	if err != nil {
+		redirectToLogin(w)
+		return
+	}
+
+	token, tokenerr := GetToken(c)
+	if !token.Valid && tokenerr != nil{
+		redirectToLogin(w)
+		return
+	}
+
+	r.ParseForm()
+	claims, _ := token.Claims.(jwt.MapClaims)
+	userPresentUsername := r.Form["username"][0]
+	unfollowuserUsername := claims["username"].(string)
+
+	var opts = grpc.WithInsecure()
+	var cc, ccerr = grpc.Dial("localhost:50051", opts)
+
+	if ccerr != nil {
+		log.Fatal(ccerr)
+	}
+
+	defer cc.Close()
+
+	client := authpb.NewUnfollowServiceClient(cc)
+
+	request := &authpb.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: unfollowuserUsername}
+	response, _ := client.UnfollowService(context.Background(),request)
+
+	if response.GetResparm1() != "" {
+		m["Error"] = response.GetResparm1()
+		m["Success"] = nil
+		log.Println(response.GetResparm1())
+		t.Execute(w, m)
+		return
+	}else {
+		m["Error"] = nil
+		m["Success"] = "Succesfully unfollowed"
+		log.Println("Succesfully unfollowed")
+		t.Execute(w, m)
+		return
+	}
+}
+
+func TweetHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
+
+	t, _ := template.ParseFiles("profile.gtpl")
+	m := map[string]interface{}{}
+
+	c, err := r.Cookie("token")
+
+	if err != nil {
+		redirectToLogin(w)
+		return
+	}
+
+	token, tokenerr := GetToken(c)
+	if !token.Valid && tokenerr != nil{
+		redirectToLogin(w)
+		return
+	}
+
+	r.ParseForm()
+	tweetContent := r.Form["tweet"][0]
+	claims, _ := token.Claims.(jwt.MapClaims)
+	tweetUserUsername := claims["username"].(string)
+
+	var opts = grpc.WithInsecure()
+	var cc, ccerr = grpc.Dial("localhost:50051", opts)
+
+	if ccerr != nil {
+		log.Fatal(ccerr)
+	}
+
+	defer cc.Close()
+
+	client := authpb.NewTweetServiceClient(cc)
+
+	request := &authpb.ProfileRequest{Reqparm1 : tweetContent, Reqparm2: tweetUserUsername}
+	response, _ := client.TweetService(context.Background(),request)
+
+	if response.GetResparm1() != "" {
+		m["Error"] = response.GetResparm1()
+		m["Success"] = nil
+		log.Println(response.GetResparm1())
+		t.Execute(w, m)
+		return
+	}else {
+		m["Error"] = nil
+		m["Success"] = "Succesfully tweeted"
+		log.Println("Succesfully tweeted")
+		t.Execute(w, m)
+		return
+	}
+}
 //
 //func FeedHandler(w http.ResponseWriter, r *http.Request) {
 //	if r.Method == "GET" {
