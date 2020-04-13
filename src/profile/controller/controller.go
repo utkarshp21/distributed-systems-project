@@ -3,14 +3,10 @@ package controller
 import (
 	"context"
 	"fmt"
-	//profileRepository "profile/repository"
-	//authRepository "auth/repository"
-	//"time"
 	"log"
 	jwt "github.com/dgrijalva/jwt-go"
 	"html/template"
 	"net/http"
-	//service "profile/service"
 	"google.golang.org/grpc"
 	"auth/authpb"
 )
