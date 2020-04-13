@@ -4,10 +4,7 @@ import (
 	authmodel "auth/model"
 	repository "auth/repository"
 	"container/list"
-	"errors"
 	"fmt"
-	"net/http"
-	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -21,43 +18,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-func SignoutService(w http.ResponseWriter, r *http.Request) error {
-
-	c, err := r.Cookie("token")
-	if err != nil {
-		return err
-	}
-
-	tokenString := c.Value
-	token, tokenerr := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method")
-		}
-		return []byte("secret"), nil
-	})
-
-	if !token.Valid || tokenerr != nil {
-		return tokenerr
-	}
-
-	claims, _ := token.Claims.(jwt.MapClaims)
-	signoutUserName := claims["username"].(string)
-	signoutUser, _ := repository.ReturnUser(signoutUserName)
-
-	if signoutUser.Username != "" {
-		signoutUser.Token = ""
-		repository.SetCurrentUser(signoutUser.Username, signoutUser)
-		http.SetCookie(w, &http.Cookie{
-			Name:    "token",
-			Value:   "",
-			Expires: time.Unix(0, 0),
-		})
-		return nil
-	} else {
-		return errors.New("User unavailable")
-	}
-}
 
 type server struct {
 }
@@ -139,6 +99,36 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 	return response, nil
 }
 
+func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*authpb.LogoutResponse, error) {
+	token, tokenerr := jwt.Parse(request.Tokenstring, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method")
+		}
+		return []byte("secret"), nil
+	})
+
+	if !token.Valid || tokenerr != nil {
+		st := status.New(codes.Unknown, "Not Logged In")
+		return nil, st.Err()
+	}
+
+	claims, _ := token.Claims.(jwt.MapClaims)
+	signoutUserName := claims["username"].(string)
+	signoutUser, _ := repository.ReturnUser(signoutUserName)
+
+	if signoutUser.Username != "" {
+		signoutUser.Token = ""
+		repository.SetCurrentUser(signoutUser.Username, signoutUser)
+		response := &authpb.LogoutResponse{
+			Message: "Successfully LoggedOut",
+		}
+		return response, nil
+	} else {
+		st := status.New(codes.Unknown, "User unavailable")
+		return nil, st.Err()
+	}
+}
+
 func main() {
 	address := "0.0.0.0:50051"
 	lis, err := net.Listen("tcp", address)
@@ -150,6 +140,7 @@ func main() {
 	s := grpc.NewServer()
 	authpb.RegisterRegisterServiceServer(s, &server{})
 	authpb.RegisterLoginServiceServer(s, &server{})
+	authpb.RegisterLogoutServiceServer(s, &server{})
 
 	s.Serve(lis)
 }

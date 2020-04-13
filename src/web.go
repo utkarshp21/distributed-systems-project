@@ -11,7 +11,7 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-	// r.HandleFunc("/", authController.LoginHandler)
+	r.HandleFunc("/", authController.LoginHandler)
 	r.HandleFunc("/register", authController.RegisterHandler)
 	r.HandleFunc("/login", authController.LoginHandler)
 	r.HandleFunc("/profile", profileController.ProfileHandler)
@@ -19,6 +19,6 @@ func main() {
 	r.HandleFunc("/follow", profileController.FollowHandler)
 	r.HandleFunc("/tweet", profileController.TweetHandler)
 	r.HandleFunc("/feed", profileController.FeedHandler)
-	// r.HandleFunc("/signout", authController.SignoutHandler)
+	r.HandleFunc("/signout", authController.SignoutHandler)
 	log.Fatal(http.ListenAndServe(":8000", r))
 }

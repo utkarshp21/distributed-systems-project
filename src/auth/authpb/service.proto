@@ -31,3 +31,15 @@ message loginResponse {
 service loginService {
     rpc Login(loginRequest) returns (loginResponse) {};
 }
+
+message logoutRequest{
+    string tokenstring = 1;
+}
+
+message logoutResponse {
+    string message = 1;
+}
+
+service logoutService {
+    rpc Logout(logoutRequest) returns (logoutResponse) {};
+}

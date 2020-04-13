@@ -1,10 +1,9 @@
 package controller
 
 import (
-	// service "auth/service"
-	// "log"
 	"html/template"
 	"net/http"
+	"time"
 
 	"auth/authpb"
 	"context"
@@ -99,22 +98,51 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func SignoutHandler(w http.ResponseWriter, r *http.Request) {
+func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
-// 	t, _ := template.ParseFiles("login.gtpl")
-// 	m := map[string]interface{}{}
+	t, _ := template.ParseFiles("login.gtpl")
+	m := map[string]interface{}{}
 
-// 	err := service.SignoutService(w,r)
+	c, cerr := r.Cookie("token")
+	if cerr != nil {
+		m["Error"] = "Please login to continue!"
+		m["Success"] = nil
+		log.Println(cerr)
+		t.Execute(w, m)
+		return
+	}
 
-// 	if err != nil {
-// 		m["Error"] = "Please login to continue!"
-// 		m["Success"] = nil
-// 		log.Println("Please login to continue")
-// 		t.Execute(w, m)
-// 		return
-// 	}else{
-// 		log.Println("Logout succesfull")
-// 		http.Redirect(w, r, "/login", http.StatusFound)
-// 		return
-// 	}
-// }
+	tokenString := c.Value
+
+	var opts = grpc.WithInsecure()
+	var cc, ccerr = grpc.Dial("localhost:50051", opts)
+
+	if ccerr != nil {
+		log.Fatal(ccerr)
+	}
+
+	defer cc.Close()
+
+	client := authpb.NewLogoutServiceClient(cc)
+
+	request := &authpb.LogoutRequest{Tokenstring: tokenString}
+
+	response, err := client.Logout(context.Background(), request)
+
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:    "token",
+			Value:   "",
+			Expires: time.Unix(0, 0),
+		})
+		m["Error"] = "Please login to continue!"
+		m["Success"] = nil
+		log.Println(err)
+		t.Execute(w, m)
+		return
+	} else {
+		log.Println(response.Message)
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
+}
