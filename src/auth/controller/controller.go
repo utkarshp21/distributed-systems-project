@@ -6,16 +6,12 @@ import (
 	"html/template"
 	"net/http"
 
-	"context"
 	"auth/authpb"
-	"google.golang.org/grpc"
+	"context"
 	"log"
+
+	"google.golang.org/grpc"
 )
-
-
-var opts = grpc.WithInsecure()
-var cc, ccerr = grpc.Dial("localhost:50051", opts)
-
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	m := map[string]interface{}{}
@@ -24,8 +20,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		t.Execute(w, m)
-		return 
-    }else{
+		return
+	} else {
+		var opts = grpc.WithInsecure()
+		var cc, ccerr = grpc.Dial("localhost:50051", opts)
 
 		if ccerr != nil {
 			log.Fatal(ccerr)
@@ -34,21 +32,21 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		defer cc.Close()
 
 		client := authpb.NewRegisterServiceClient(cc)
-		
+
 		// log.Printf(r.Form["username"][1])
 		// request := &authpb.RegisterRequest{Firstname: r.Form["firstname"][0], Lastname:r.Form["lastname"][0], Username:r.Form["username"][0], Password:r.Form["password"][0]}
-		
-		request := &authpb.RegisterRequest{Firstname: "Utkarsh", Lastname:"Prakash", Username:"up@gmail.com", Password:"up"}
+
+		request := &authpb.RegisterRequest{Firstname: "Utkarsh", Lastname: "Prakash", Username: "up@gmail.com", Password: "up"}
 
 		_, err := client.Register(context.Background(), request)
 
-    	if err != nil {
+		if err != nil {
 			log.Printf("Receive Error Regiseter response => [%v]", err)
 			m["Error"] = err
 			log.Println(err)
 			t.Execute(w, m)
 			return
-		}else{
+		} else {
 			log.Println("User Registered succesfully")
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
@@ -56,31 +54,50 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	
-// 	t, _ := template.ParseFiles("login.gtpl")
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
-// 	m := map[string]interface{}{}
+	t, _ := template.ParseFiles("login.gtpl")
 
-// 	if r.Method == "GET" {
-// 		t.Execute(w, nil)
-// 		return 
-// 	}else{
+	m := map[string]interface{}{}
 
-// 		errMsg := service.LoginService(w,r)
+	if r.Method == "GET" {
+		t.Execute(w, nil)
+		return
+	} else {
 
-// 		if errMsg != "" {
-// 			m["Error"] = errMsg
-// 			log.Println(errMsg)
-// 			t.Execute(w, m)
-// 			return
-// 		}else{
-// 			log.Println("Login successful")
-// 			http.Redirect(w, r, "/profile", http.StatusFound)
-// 			return
-// 		}
-// 	}
-// }
+		var opts = grpc.WithInsecure()
+		var cc, ccerr = grpc.Dial("localhost:50051", opts)
+
+		if ccerr != nil {
+			log.Fatal(ccerr)
+		}
+
+		defer cc.Close()
+
+		client := authpb.NewLoginServiceClient(cc)
+
+		// log.Printf("Username", r.Form["username"][0])
+
+		request := &authpb.LoginRequest{Username: "up@gmail.com", Password: "up"}
+
+		response, errMsg := client.Login(context.Background(), request)
+
+		if errMsg != nil {
+			m["Error"] = errMsg
+			log.Println(errMsg)
+			t.Execute(w, m)
+			return
+		} else {
+			http.SetCookie(w, &http.Cookie{
+				Name:  "token",
+				Value: response.Tokenstring,
+			})
+			log.Println(response.Message)
+			http.Redirect(w, r, "/profile", http.StatusFound)
+			return
+		}
+	}
+}
 
 // func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -101,4 +118,3 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 // 		return
 // 	}
 // }
-

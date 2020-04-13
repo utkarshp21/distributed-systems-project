@@ -7,93 +7,25 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"golang.org/x/crypto/bcrypt"
-	jwt "github.com/dgrijalva/jwt-go"
 	"time"
-	
+
+	jwt "github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
+
 	"auth/authpb"
 	"context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
-	"google.golang.org/grpc/codes"
 	"log"
 	"net"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-
-func RegisterService (r *http.Request)(string){
-
-	r.ParseForm()
-
-	_, usernameExists :=  repository.ReturnUser(r.Form["username"][0])
-
-	if usernameExists {
-		return "Email already in use!"
-	}
-
-	registerFromInput := authmodel.User{
-		Username: r.Form["username"][0],
-		Password: r.Form["password"][0],
-		FirstName: r.Form["firstname"][0],
-		LastName: r.Form["lastname"][0],
-		Followers: list.New(),
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(registerFromInput.Password), 5)
-	if err != nil {
-		return "Error While Hashing Password, Try Again"
-	}
-	registerFromInput.Password = string(hash)
-
-	repository.SaveUser(registerFromInput)
-	repository.InitialiseTweets(registerFromInput)
-	return ""
-}
-
-func LoginService(w http.ResponseWriter ,r *http.Request)(string)  {
-
-
-	r.ParseForm()
-
-	user, usernameExists :=  repository.ReturnUser(r.Form["username"][0])
-
-	if usernameExists {
-		passowrdErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Form["password"][0]))
-
-		if  passowrdErr != nil {
-			return "Invalid password"
-		}
-
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"username":  user.Username,
-			"firstname": user.FirstName,
-			"lastname":  user.LastName,
-		})
-
-		tokenString, loginErr := token.SignedString([]byte("secret"))
-
-		if loginErr != nil {
-			return "Error while generating token,Try again"
-		}
-
-		user.Token = tokenString
-		repository.SetCurrentUser(user.Username, user)
-
-		http.SetCookie(w, &http.Cookie{
-			Name:    "token",
-			Value:   tokenString,
-		})
-
-		return ""
-
-	}
-	return "Invalid username"
-}
-
-func SignoutService(w http.ResponseWriter, r *http.Request) error{
+func SignoutService(w http.ResponseWriter, r *http.Request) error {
 
 	c, err := r.Cookie("token")
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
@@ -128,12 +60,54 @@ func SignoutService(w http.ResponseWriter, r *http.Request) error{
 }
 
 type server struct {
+}
+
+func (*server) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb.LoginResponse, error) {
+
+	user, usernameExists := repository.ReturnUser(request.Username)
+
+	if usernameExists {
+		passowrdErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
+
+		if passowrdErr != nil {
+			st := status.New(codes.InvalidArgument, "Invalid Password!")
+			return nil, st.Err()
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"username":  user.Username,
+			"firstname": user.FirstName,
+			"lastname":  user.LastName,
+		})
+
+		tokenString, loginErr := token.SignedString([]byte("secret"))
+
+		if loginErr != nil {
+			st := status.New(codes.Unknown, "Error while generating token,Try again")
+			return nil, st.Err()
+		}
+
+		user.Token = tokenString
+		repository.SetCurrentUser(user.Username, user)
+
+		response := &authpb.LoginResponse{
+			Message:     "Successfully Logged In!!",
+			Tokenstring: tokenString,
+		}
+
+		return response, nil
+
+	}
+
+	st := status.New(codes.InvalidArgument, "Invalid username")
+
+	return nil, st.Err()
 
 }
 
 func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*authpb.RegisterResponse, error) {
-	
-	_, usernameExists :=  repository.ReturnUser(request.Username)
+
+	_, usernameExists := repository.ReturnUser(request.Username)
 
 	if usernameExists {
 		st := status.New(codes.InvalidArgument, "User already exists")
@@ -141,10 +115,10 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 	}
 
 	registerFromInput := authmodel.User{
-		Username: request.Username,
-		Password: request.Password,
+		Username:  request.Username,
+		Password:  request.Password,
 		FirstName: request.Firstname,
-		LastName: request.Lastname,
+		LastName:  request.Lastname,
 		Followers: list.New(),
 	}
 
@@ -157,25 +131,11 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 
 	repository.SaveUser(registerFromInput)
 	repository.InitialiseTweets(registerFromInput)
-	
 
 	response := &authpb.RegisterResponse{
 		Message: "Successfully registered",
 	}
 
-	return response, nil
-}
-
-
-func (*server) Hello(ctx context.Context, request *authpb.HelloRequest) (*authpb.HelloResponse, error) {
-	
-	log.Printf("Step2!!!")
-
-	firstname := request.Firstname
-	lastname := request.Lastname
-	response := &authpb.HelloResponse{
-		Greeting: "Hello " + firstname + lastname,
-	}
 	return response, nil
 }
 
@@ -185,11 +145,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error %v", err)
 	}
-	fmt.Printf("Server is listening on %v ...", address)
+	log.Printf("Server is listening on %v ...", address)
 
 	s := grpc.NewServer()
-	authpb.RegisterHelloServiceServer(s, &server{})
 	authpb.RegisterRegisterServiceServer(s, &server{})
+	authpb.RegisterLoginServiceServer(s, &server{})
 
 	s.Serve(lis)
 }
