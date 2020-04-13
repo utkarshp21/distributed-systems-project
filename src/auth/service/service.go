@@ -5,16 +5,13 @@ import (
 	repository "auth/repository"
 	"container/list"
 	"fmt"
-	//authStorage "auth/storage"
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	profileRepository "profile/repository"
-
 	"auth/authpb"
 	"context"
 	"log"
 	"net"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
