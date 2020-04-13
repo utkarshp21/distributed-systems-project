@@ -2,164 +2,106 @@ package service
 
 import (
 	"container/list"
-	"errors"
-	"fmt"
+	//"errors"
+	//"fmt"
 	profileRepository "profile/repository"
 	authRepository "auth/repository"
 	authmodel "auth/model"
-	jwt "github.com/dgrijalva/jwt-go"
-	"net/http"
+	//jwt "github.com/dgrijalva/jwt-go"
+	//"net/http"
 	//authStorage "auth/storage"
 )
 
-func GetToken(c *http.Cookie) (*jwt.Token,error) {
-	tokenString := c.Value
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method")
-		}
-		return []byte("secret"), nil
-	})
-	return token, err
-}
+//func GetToken(c *http.Cookie) (*jwt.Token,error) {
+//	tokenString := c.Value
+//	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+//		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+//			return nil, fmt.Errorf("Unexpected signing method")
+//		}
+//		return []byte("secret"), nil
+//	})
+//	return token, err
+//}
+//
+//func ProfileService(r *http.Request)error{
+//
+//	c, err := r.Cookie("token")
+//
+//	if err != nil {
+//		return err
+//	}
+//	token, tokenerr := GetToken(c)
+//
+//	if token.Valid && tokenerr == nil{
+//		return nil
+//	}else{
+//		return errors.New("Token error")
+//	}
+//}
 
-func ProfileService(r *http.Request)error{
+func FollowService(userPresentUsername string,followuserUsername string) (string) {
 
-	c, err := r.Cookie("token")
-
-	if err != nil {
-		return err
-	}
-	token, tokenerr := GetToken(c)
-
-	if token.Valid && tokenerr == nil{
-		return nil
-	}else{
-		return errors.New("Token error")
-	}
-}
-
-func FollowService(r *http.Request) (error,string) {
-
-	c, err := r.Cookie("token")
-
-	if err != nil {
-		return err, ""
-	}
-
-	token, tokenerr := GetToken(c)
-	if !token.Valid && tokenerr != nil{
-		return errors.New("Token error"), ""
-	}
-
-	r.ParseForm()
-	userPresent, _ := authRepository.ReturnUser(r.Form["username"][0])
-	claims, _ := token.Claims.(jwt.MapClaims)
-	followUser, _ := authRepository.ReturnUser(claims["username"].(string))
+	userPresent, _ := authRepository.ReturnUser(userPresentUsername)
+	followUser, _ := authRepository.ReturnUser(followuserUsername)
 
 	if userPresent == followUser{
-		return nil, "Cant follow yourself"
+		return "Cant follow yourself"
 	}
 
 	for e := followUser.Followers.Front() ; e != nil ; e = e.Next(){
 		k := e.Value.(authmodel.User)
 		if userPresent == k{
-			return nil, "User already followed"
+			return "User already followed"
 		}
 	}
 
 	if userPresent.Username != "" {
 		followUser.Followers.PushBack(userPresent)
 		authRepository.SaveUser(followUser)
-		return nil, ""
+		return ""
 	} else {
-		return nil, "Username doesnt exist"
+		return "Username doesnt exist"
 	}
 }
 
-func UnfollowService(r *http.Request) (error,string) {
+func UnfollowService(userPresentUsername string,unfollowuserUsername string) (string) {
 
-	c, err := r.Cookie("token")
-
-	if err != nil {
-		return err, ""
-	}
-
-	token, tokenerr := GetToken(c)
-	if !token.Valid && tokenerr != nil{
-		return errors.New("Token error"), ""
-	}
-
-	r.ParseForm()
-	userPresent, _ := authRepository.ReturnUser(r.Form["username"][0])
-	claims, _ := token.Claims.(jwt.MapClaims)
-	unfollowUser, _ := authRepository.ReturnUser(claims["username"].(string))
+	userPresent, _ := authRepository.ReturnUser(userPresentUsername)
+	unfollowUser, _ := authRepository.ReturnUser(unfollowuserUsername)
 
 	if userPresent == unfollowUser{
-		return nil, "Cant unfollow yourself"
+		return "Cant unfollow yourself"
 	}
 
 	if userPresent.Username == "" {
-		return nil, "Username doesnt exist"
+		return "Username doesnt exist"
 	}
 
 	for e := unfollowUser.Followers.Front() ; e != nil ; e = e.Next(){
 		k := e.Value.(authmodel.User)
 		if userPresent == k{
-			removed := unfollowUser.Followers.Remove(e)
-			fmt.Println("Removed user",removed)
-			if unfollowUser.Followers.Front() == nil{
-				fmt.Println("Followers after removal zero")
-			}
+			unfollowUser.Followers.Remove(e)
 			authRepository.SaveUser(unfollowUser)
-			return nil, ""
+			return ""
 		}
 	}
 
-	return nil, "Follow user first"
+	return "Follow user first"
 }
 
-func TweetService(r *http.Request) (error,string) {
-
-	c, err := r.Cookie("token")
-
-	if err != nil {
-		return err, ""
-	}
-
-	token, tokenerr := GetToken(c)
-	if !token.Valid && tokenerr != nil{
-		return errors.New("Token error"), ""
-	}
-
-	r.ParseForm()
-	tweetContent := r.Form["tweet"][0]
+func TweetService(tweetContent string, tweetUser string) (string) {
 
 	if tweetContent != "" {
-		claims, _ := token.Claims.(jwt.MapClaims)
-		tweetUser := claims["username"].(string)
 		profileRepository.SaveTweet(tweetUser,tweetContent)
-		return nil, ""
+		return ""
 	} else {
-		return nil, "Enter tweet content"
+		return "Enter tweet content"
 	}
 }
 
-func FeedService(r *http.Request)(error,string,string){
+func FeedService(feedUserUsename string)(string,string){
 
-	c, err := r.Cookie("token")
-
-	if err != nil {
-		return err, "",""
-	}
-
-	token, tokenerr := GetToken(c)
-	if !token.Valid && tokenerr != nil{
-		return errors.New("Token error"), "",""
-	}
-
-	claims, _ := token.Claims.(jwt.MapClaims)
-	feedUser, _ := authRepository.ReturnUser(claims["username"].(string))
+	feedUser, _ := authRepository.ReturnUser(feedUserUsename)
 	feed := ""
 
 	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
@@ -169,9 +111,9 @@ func FeedService(r *http.Request)(error,string,string){
 	}
 
 	if feed != "" {
-		return nil, "",feed
+		return "",feed
 	} else {
-		return nil, "No feed",""
+		return "No feed",""
 	}
 }
 
