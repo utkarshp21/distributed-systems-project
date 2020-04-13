@@ -89,7 +89,7 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 	registerFromInput.Password = string(hash)
 
 	repository.SaveUser(registerFromInput)
-	repository.InitialiseTweets(registerFromInput)
+	profileRepository.InitialiseTweets(registerFromInput)
 
 	response := &authpb.RegisterResponse{
 		Message: "Successfully registered",
