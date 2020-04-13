@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package profileproto;
+
+message profileRequest {
+  string reqparm1 = 1;
+  string reqparm2 = 2;
+}
+
+message profileResponse {
+  string resparm1 = 1;
+}
+
+message feedRequest {
+  string reqparm1 = 1;
+}
+
+message feedResponse {
+  string resparm1 = 1;
+  string resparm2 = 2;
+}
+
+service registerService {
+  rpc FollowService(profileRequest) returns (profileResponse) {};
+  rpc UnfollowService(profileRequest) returns (profileResponse) {};
+  rpc TweetService(profileRequest) returns (profileResponse) {};
+  rpc FeedService(feedRequest) returns (feedResponse) {};
+}
+
+
+
