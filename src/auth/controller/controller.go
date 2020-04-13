@@ -32,10 +32,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		client := authpb.NewRegisterServiceClient(cc)
 
+		r.ParseForm()
 		// log.Printf(r.Form["username"][1])
-		// request := &authpb.RegisterRequest{Firstname: r.Form["firstname"][0], Lastname:r.Form["lastname"][0], Username:r.Form["username"][0], Password:r.Form["password"][0]}
+		request := &authpb.RegisterRequest{Firstname: r.Form["firstname"][0], Lastname:r.Form["lastname"][0], Username:r.Form["username"][0], Password:r.Form["password"][0]}
 
-		request := &authpb.RegisterRequest{Firstname: "Utkarsh", Lastname: "Prakash", Username: "up@gmail.com", Password: "up"}
+		//request := &authpb.RegisterRequest{Firstname: "Utkarsh", Lastname: "Prakash", Username: "up@gmail.com", Password: "up"}
 
 		_, err := client.Register(context.Background(), request)
 
@@ -75,9 +76,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		client := authpb.NewLoginServiceClient(cc)
 
+		r.ParseForm()
+		request := &authpb.LoginRequest{Username: r.Form["username"][0], Password: r.Form["password"][0]}
 		// log.Printf("Username", r.Form["username"][0])
 
-		request := &authpb.LoginRequest{Username: "up@gmail.com", Password: "up"}
+		//request := &authpb.LoginRequest{Username: "up@gmail.com", Password: "up"}
 
 		response, errMsg := client.Login(context.Background(), request)
 
@@ -130,17 +133,17 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 	response, err := client.Logout(context.Background(), request)
 
 	if err != nil {
-		http.SetCookie(w, &http.Cookie{
-			Name:    "token",
-			Value:   "",
-			Expires: time.Unix(0, 0),
-		})
 		m["Error"] = "Please login to continue!"
 		m["Success"] = nil
 		log.Println(err)
 		t.Execute(w, m)
 		return
 	} else {
+		http.SetCookie(w, &http.Cookie{
+			Name:    "token",
+			Value:   "",
+			Expires: time.Unix(0, 0),
+		})
 		log.Println(response.Message)
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
