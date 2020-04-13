@@ -13,8 +13,15 @@ import (
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	m := map[string]interface{}{}
 
+	_, err := r.Cookie("token")
+
+	if err == nil {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
+
+	m := map[string]interface{}{}
 	t, _ := template.ParseFiles("register.gtpl")
 
 	if r.Method == "GET" {
@@ -52,6 +59,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.ParseFiles("login.gtpl")
+
+	_, err := r.Cookie("token")
+
+	if err == nil {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
 
 	m := map[string]interface{}{}
 
