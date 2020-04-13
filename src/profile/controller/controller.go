@@ -225,46 +225,58 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-//
-//func FeedHandler(w http.ResponseWriter, r *http.Request) {
-//	if r.Method == "GET" {
-//		http.Redirect(w, r, "/profile", http.StatusFound)
-//		return
-//	}
-//
-//	t, _ := template.ParseFiles("profile.gtpl")
-//	m := map[string]interface{}{}
-//
-//	c, err := r.Cookie("token")
-//
-//	if err != nil {
-//		redirectToLogin(w)
-//		return
-//	}
-//
-//	token, tokenerr := GetToken(c)
-//	if !token.Valid && tokenerr != nil{
-//		redirectToLogin(w)
-//		return
-//	}
-//
-//	claims, _ := token.Claims.(jwt.MapClaims)
-//	feedUserUsername := claims["username"].(string)
-//
-//	srvErr, feed := service.FeedService(feedUserUsername)
-//
-//	if srvErr != "" {
-//		m["Error"] = srvErr
-//		m["Success"] = nil
-//		log.Println(srvErr)
-//		t.Execute(w, m)
-//		return
-//	}else {
-//		m["Error"] = nil
-//		m["Success"] = nil
-//		m["Feed"] = feed
-//		log.Println("Feed Succesfull")
-//		t.Execute(w, m)
-//		return
-//	}
-//}
+
+func FeedHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
+
+	t, _ := template.ParseFiles("profile.gtpl")
+	m := map[string]interface{}{}
+
+	c, err := r.Cookie("token")
+
+	if err != nil {
+		redirectToLogin(w)
+		return
+	}
+
+	token, tokenerr := GetToken(c)
+	if !token.Valid && tokenerr != nil{
+		redirectToLogin(w)
+		return
+	}
+
+	claims, _ := token.Claims.(jwt.MapClaims)
+	feedUserUsername := claims["username"].(string)
+
+	var opts = grpc.WithInsecure()
+	var cc, ccerr = grpc.Dial("localhost:50051", opts)
+
+	if ccerr != nil {
+		log.Fatal(ccerr)
+	}
+
+	defer cc.Close()
+
+	client := authpb.NewFeedServiceClient(cc)
+
+	request := &authpb.FeedRequest{Reqparm1 : feedUserUsername}
+	response, _ := client.FeedService(context.Background(),request)
+
+	if response.GetResparm1() != "" {
+		m["Error"] = response.GetResparm1()
+		m["Success"] = nil
+		log.Println(response.GetResparm1())
+		t.Execute(w, m)
+		return
+	}else {
+		m["Error"] = nil
+		m["Success"] = nil
+		m["Feed"] = response.GetResparm2()
+		log.Println("Feed Succesfull")
+		t.Execute(w, m)
+		return
+	}
+}

@@ -204,6 +204,40 @@ func (*server) TweetService(ctx context.Context, request *authpb.ProfileRequest)
 	}
 }
 
+func (*server) FeedService(ctx context.Context, request *authpb.FeedRequest) (*authpb.FeedResponse, error) {
+
+	feedUser, _ := repository.ReturnUser(request.GetReqparm1())
+	feed := ""
+
+	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
+		followUser := e.Value.(authmodel.User)
+		followUsername := followUser.Username
+		feed = feed + GetTopFiveTweets(profileRepository.GetTweetList(followUsername),followUsername)
+	}
+
+	if feed != "" {
+		response := &authpb.FeedResponse{Resparm1: "",Resparm2: feed}
+		return response, nil
+	} else {
+		response := &authpb.FeedResponse{Resparm1: "No feed",Resparm2: ""}
+		return response, nil
+	}
+}
+
+func GetTopFiveTweets(tweetList *list.List,followUsername string)(string){
+	numOfTweets := 5
+	feed := ""
+	for k := tweetList.Back(); k != nil && numOfTweets > 0; k = k.Prev() {
+		numOfTweets = numOfTweets - 1
+		feed = feed + k.Value.(string) + "\n"
+	}
+	if feed != ""{
+		feed = "Top 5 tweets from "+ followUsername + " : \n" + feed
+	}
+	return feed
+
+}
+
 func main() {
 	address := "0.0.0.0:50051"
 	lis, err := net.Listen("tcp", address)
@@ -219,6 +253,7 @@ func main() {
 	authpb.RegisterFollowServiceServer(s, &server{})
 	authpb.RegisterUnfollowServiceServer(s, &server{})
 	authpb.RegisterTweetServiceServer(s, &server{})
+	authpb.RegisterFeedServiceServer(s, &server{})
 
 	s.Serve(lis)
 }

@@ -18,7 +18,7 @@ func main() {
 	r.HandleFunc("/unfollow", profileController.UnfollowHandler)
 	r.HandleFunc("/follow", profileController.FollowHandler)
 	r.HandleFunc("/tweet", profileController.TweetHandler)
-	//r.HandleFunc("/feed", profileController.FeedHandler)
+	r.HandleFunc("/feed", profileController.FeedHandler)
 	r.HandleFunc("/signout", authController.SignoutHandler)
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
