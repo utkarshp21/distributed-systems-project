@@ -3,11 +3,6 @@ package repository
 import (
 	authStorage "auth/storage"
 	authmodel "auth/model"
-	//"container/list"
-	//profilemodel "profile/model"
-	//profileStorage "profile/storage"
-	//jwt "github.com/dgrijalva/jwt-go"
-	//"golang.org/x/crypto/bcrypt"
 )
 
 func ReturnUser(username string)(authmodel.User, bool){
