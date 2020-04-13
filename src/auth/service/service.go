@@ -13,8 +13,8 @@ import (
 	"log"
 	"net"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	//"google.golang.org/grpc/codes"
+	//"google.golang.org/grpc/status"
 
 )
 
@@ -29,8 +29,8 @@ func (*server) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb
 		passowrdErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 
 		if passowrdErr != nil {
-			st := status.New(codes.InvalidArgument, "Invalid Password!")
-			return nil, st.Err()
+			response := &authpb.LoginResponse{Message:"Invalid Password", Tokenstring: ""}
+			return response, nil
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -42,25 +42,20 @@ func (*server) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb
 		tokenString, loginErr := token.SignedString([]byte("secret"))
 
 		if loginErr != nil {
-			st := status.New(codes.Unknown, "Error while generating token,Try again")
-			return nil, st.Err()
+			response := &authpb.LoginResponse{Message:"Error while generating token,Try again", Tokenstring: ""}
+			return response, nil
 		}
 
 		user.Token = tokenString
 		repository.SetCurrentUser(user.Username, user)
 
-		response := &authpb.LoginResponse{
-			Message:     "Successfully Logged In!!",
-			Tokenstring: tokenString,
-		}
-
+		response := &authpb.LoginResponse{Message:"", Tokenstring: tokenString}
 		return response, nil
 
 	}
 
-	st := status.New(codes.InvalidArgument, "Invalid username")
-
-	return nil, st.Err()
+	response := &authpb.LoginResponse{Message:"Invalid Username", Tokenstring: ""}
+	return response, nil
 
 }
 
@@ -69,8 +64,8 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 	_, usernameExists := repository.ReturnUser(request.Username)
 
 	if usernameExists {
-		st := status.New(codes.InvalidArgument, "User already exists")
-		return nil, st.Err()
+		response := &authpb.RegisterResponse{Message: "User already exists"}
+		return response, nil
 	}
 
 	registerFromInput := authmodel.User{
@@ -83,18 +78,15 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(registerFromInput.Password), 5)
 	if err != nil {
-		st := status.New(codes.Unknown, "Error While Hashing Password, Try Again")
-		return nil, st.Err()
+		response := &authpb.RegisterResponse{Message: "Error While Hashing Password, Try Again"}
+		return response, nil
 	}
 	registerFromInput.Password = string(hash)
 
 	repository.SaveUser(registerFromInput)
 	profileRepository.InitialiseTweets(registerFromInput)
 
-	response := &authpb.RegisterResponse{
-		Message: "Successfully registered",
-	}
-
+	response := &authpb.RegisterResponse{Message: "",}
 	return response, nil
 }
 
@@ -107,8 +99,8 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 	})
 
 	if !token.Valid || tokenerr != nil {
-		st := status.New(codes.Unknown, "Not Logged In")
-		return nil, st.Err()
+		response := &authpb.LogoutResponse{Message: "Please login to continue"}
+		return response, nil
 	}
 
 	claims, _ := token.Claims.(jwt.MapClaims)
@@ -118,13 +110,11 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 	if signoutUser.Username != "" {
 		signoutUser.Token = ""
 		repository.SetCurrentUser(signoutUser.Username, signoutUser)
-		response := &authpb.LogoutResponse{
-			Message: "Successfully LoggedOut",
-		}
+		response := &authpb.LogoutResponse{Message: ""}
 		return response, nil
 	} else {
-		st := status.New(codes.Unknown, "User unavailable")
-		return nil, st.Err()
+		response := &authpb.LogoutResponse{Message: "Please login to continue"}
+		return response, nil
 	}
 }
 

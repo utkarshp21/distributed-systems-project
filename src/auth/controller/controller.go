@@ -33,17 +33,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		client := authpb.NewRegisterServiceClient(cc)
 
 		r.ParseForm()
-		// log.Printf(r.Form["username"][1])
 		request := &authpb.RegisterRequest{Firstname: r.Form["firstname"][0], Lastname:r.Form["lastname"][0], Username:r.Form["username"][0], Password:r.Form["password"][0]}
+		response, _ := client.Register(context.Background(), request)
 
-		//request := &authpb.RegisterRequest{Firstname: "Utkarsh", Lastname: "Prakash", Username: "up@gmail.com", Password: "up"}
-
-		_, err := client.Register(context.Background(), request)
-
-		if err != nil {
-			log.Printf("Receive Error Regiseter response => [%v]", err)
-			m["Error"] = err
-			log.Println(err)
+		if response.Message != "" {
+			m["Error"] = response.Message
+			log.Println(response.Message)
 			t.Execute(w, m)
 			return
 		} else {
@@ -78,15 +73,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		r.ParseForm()
 		request := &authpb.LoginRequest{Username: r.Form["username"][0], Password: r.Form["password"][0]}
-		// log.Printf("Username", r.Form["username"][0])
+		response , _ := client.Login(context.Background(), request)
 
-		//request := &authpb.LoginRequest{Username: "up@gmail.com", Password: "up"}
-
-		response, errMsg := client.Login(context.Background(), request)
-
-		if errMsg != nil {
-			m["Error"] = errMsg
-			log.Println(errMsg)
+		if response.Message != "" {
+			m["Error"] = response.Message
+			log.Println(response.Message)
 			t.Execute(w, m)
 			return
 		} else {
@@ -94,7 +85,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 				Name:  "token",
 				Value: response.Tokenstring,
 			})
-			log.Println(response.Message)
+			log.Println("Login successful")
 			http.Redirect(w, r, "/profile", http.StatusFound)
 			return
 		}
@@ -108,9 +99,9 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	c, cerr := r.Cookie("token")
 	if cerr != nil {
-		m["Error"] = "Please login to continue!"
+		m["Error"] = "Please login to continue"
 		m["Success"] = nil
-		log.Println(cerr)
+		log.Println("Please login to continue")
 		t.Execute(w, m)
 		return
 	}
@@ -130,12 +121,12 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	request := &authpb.LogoutRequest{Tokenstring: tokenString}
 
-	response, err := client.Logout(context.Background(), request)
+	response, _ := client.Logout(context.Background(), request)
 
-	if err != nil {
-		m["Error"] = "Please login to continue!"
+	if response.Message != "" {
+		m["Error"] = response.Message
 		m["Success"] = nil
-		log.Println(err)
+		log.Println(response.Message)
 		t.Execute(w, m)
 		return
 	} else {
@@ -144,7 +135,7 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 			Value:   "",
 			Expires: time.Unix(0, 0),
 		})
-		log.Println(response.Message)
+		log.Println("Logout successful")
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
