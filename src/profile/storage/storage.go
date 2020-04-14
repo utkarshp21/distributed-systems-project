@@ -15,6 +15,17 @@ func SaveTweetDB(tweetUser string,tweetContent string,resultChan chan bool){
 	resultChan <- true
 }
 
+func DeleteTweetDB(tweetUser string,tweetContent string,resultChan chan bool) {
+	profilemodel.TweetsMux.Lock()
+	for e := Tweets[tweetUser].Front(); e != nil ; e = e.Next(){
+		if tweetContent == e.Value{
+			Tweets[tweetUser].Remove(e)
+		}
+	}
+	profilemodel.TweetsMux.Unlock()
+	resultChan <- true
+}
+
 func GetTweetListDB(followUsername string, resultChan chan *list.List){
 	profilemodel.TweetsMux.Lock()
 	tweetList := Tweets[followUsername]
