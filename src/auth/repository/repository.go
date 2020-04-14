@@ -22,10 +22,17 @@ func ReturnUser(username string, ctx context.Context)(authmodel.User, bool, erro
 
 }
 
-func SaveUser(user authmodel.User){
+func SaveUser(user authmodel.User, ctx context.Context)(error){
 	resultChan := make(chan bool)
 	go authStorage.SaveUserDB(user,resultChan)
-	<-resultChan
+
+	select {
+	case <-resultChan:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+
 }
 
 

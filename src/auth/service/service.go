@@ -50,7 +50,13 @@ func (*server) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb
 		}
 
 		user.Token = tokenString
-		repository.SaveUser(user)
+
+		ctxErr2 := repository.SaveUser(user,ctx)
+
+		if ctxErr2 != nil{
+			response := &authpb.LoginResponse{Message:"Request timeout. Try again", Tokenstring: ""}
+			return response, nil
+		}
 
 		response := &authpb.LoginResponse{Message:"", Tokenstring: tokenString}
 		return response, nil
@@ -91,7 +97,13 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 	}
 	registerFromInput.Password = string(hash)
 
-	repository.SaveUser(registerFromInput)
+	ctxErr2 := repository.SaveUser(registerFromInput,ctx)
+
+	if ctxErr2 != nil{
+		response := &authpb.RegisterResponse{Message:"Request timeout. Try again"}
+		return response, nil
+	}
+
 	profileRepository.InitialiseTweets(registerFromInput)
 
 	response := &authpb.RegisterResponse{Message: "",}
@@ -122,7 +134,11 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 
 	if signoutUser.Username != "" {
 		signoutUser.Token = ""
-		repository.SaveUser(signoutUser)
+		ctxErr2 := repository.SaveUser(signoutUser,ctx)
+		if ctxErr2 != nil{
+			response := &authpb.LogoutResponse{Message: "Request timeout. Try again"}
+			return response, nil
+		}
 		response := &authpb.LogoutResponse{Message: ""}
 		return response, nil
 	} else {
@@ -162,7 +178,11 @@ func (*server) FollowService(ctx context.Context, request *authpb.ProfileRequest
 
 	if userPresent.Username != "" {
 		followUser.Followers.PushBack(userPresent)
-		repository.SaveUser(followUser)
+		ctxErr3 := repository.SaveUser(followUser,ctx)
+		if ctxErr3 != nil{
+			response := &authpb.ProfileResponse{Resparm1: "Request timeout. Try again"}
+			return response, nil
+		}
 		response := &authpb.ProfileResponse{Resparm1: ""}
 		return response, nil
 	} else {
@@ -201,7 +221,11 @@ func (*server) UnfollowService(ctx context.Context, request *authpb.ProfileReque
 		k := e.Value.(authmodel.User)
 		if userPresent == k{
 			unfollowUser.Followers.Remove(e)
-			repository.SaveUser(unfollowUser)
+			ctxErr3 := repository.SaveUser(unfollowUser,ctx)
+			if ctxErr3 != nil{
+				response := &authpb.ProfileResponse{Resparm1: "Request timeout. Try again"}
+				return response, nil
+			}
 			response := &authpb.ProfileResponse{Resparm1: ""}
 			return response, nil
 		}
