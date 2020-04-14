@@ -2,24 +2,41 @@ package repository
 
 import (
 	"container/list"
+	"context"
 	profileStorage "profile/storage"
 	authmodel "auth/model"
 )
 
-func SaveTweet(tweetUser string,tweetContent string){
+func SaveTweet(tweetUser string,tweetContent string,ctx context.Context)(error){
 	resultChan := make(chan bool)
 	go profileStorage.SaveTweetDB(tweetUser,tweetContent,resultChan)
-	<-resultChan
+	select {
+	case <-resultChan:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
-func GetTweetList(followUsername string)(*list.List) {
+func GetTweetList(followUsername string,ctx context.Context)(*list.List,error) {
 	resultChan := make(chan *list.List)
+	dummyList := list.New()
 	go profileStorage.GetTweetListDB(followUsername,resultChan)
-	return <-resultChan
+	select {
+	case res := <-resultChan:
+		return res,nil
+	case <-ctx.Done():
+		return dummyList, ctx.Err()
+	}
 }
 
-func InitialiseTweets(user authmodel.User){
+func InitialiseTweets(user authmodel.User,ctx context.Context)(error){
 	resultChan := make(chan bool)
 	go profileStorage.InitialiseTweetsDB(user, resultChan)
-	<-resultChan
+	select {
+	case <-resultChan:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }

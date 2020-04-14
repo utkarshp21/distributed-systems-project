@@ -104,7 +104,12 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 		return response, nil
 	}
 
-	profileRepository.InitialiseTweets(registerFromInput)
+	ctxErr3 := profileRepository.InitialiseTweets(registerFromInput,ctx)
+
+	if ctxErr3 != nil{
+		response := &authpb.RegisterResponse{Message:"Request timeout. Try again"}
+		return response, nil
+	}
 
 	response := &authpb.RegisterResponse{Message: "",}
 	return response, nil
@@ -241,7 +246,11 @@ func (*server) TweetService(ctx context.Context, request *authpb.ProfileRequest)
 	tweetUser := request.GetReqparm2()
 
 	if tweetContent != "" {
-		profileRepository.SaveTweet(tweetUser,tweetContent)
+		ctxErr := profileRepository.SaveTweet(tweetUser,tweetContent,ctx)
+		if ctxErr != nil{
+			response := &authpb.ProfileResponse{Resparm1: "Request timeout. Try again"}
+			return response, nil
+		}
 		response := &authpb.ProfileResponse{Resparm1: ""}
 		return response, nil
 	} else {
@@ -264,7 +273,12 @@ func (*server) FeedService(ctx context.Context, request *authpb.FeedRequest) (*a
 	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
 		followUser := e.Value.(authmodel.User)
 		followUsername := followUser.Username
-		feed = feed + GetTopFiveTweets(profileRepository.GetTweetList(followUsername),followUsername)
+		tweetList, ctxErr2 := profileRepository.GetTweetList(followUsername,ctx)
+		if ctxErr2 != nil{
+			response := &authpb.FeedResponse{Resparm1: "Request timeout. Try again",Resparm2: ""}
+			return response, nil
+		}
+		feed = feed + GetTopFiveTweets(tweetList,followUsername)
 	}
 
 	if feed != "" {
