@@ -21,3 +21,10 @@ func SaveUserDB(user authmodel.User,resultChan chan bool)  {
 	authmodel.UsersMux.Unlock()
 	resultChan <- true
 }
+
+func DeleteUserDB(user authmodel.User,resultChan chan bool)  {
+	authmodel.UsersMux.Lock()
+	delete(Users,user.Username)
+	authmodel.UsersMux.Unlock()
+	resultChan <- true
+}

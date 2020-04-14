@@ -22,6 +22,7 @@ type server struct {
 func (*server) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb.LoginResponse, error) {
 
 	user, usernameExists, ctxErr := repository.ReturnUser(request.Username,ctx)
+	bkpUser := user
 
 	if ctxErr != nil{
 		response := &authpb.LoginResponse{Message:"Request timeout. Try again", Tokenstring: ""}
@@ -51,7 +52,7 @@ func (*server) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb
 
 		user.Token = tokenString
 
-		ctxErr2 := repository.SaveUser(user,ctx)
+		ctxErr2 := repository.SaveUser(user,ctx,bkpUser)
 
 		if ctxErr2 != nil{
 			response := &authpb.LoginResponse{Message:"Request timeout. Try again", Tokenstring: ""}
@@ -97,7 +98,7 @@ func (*server) Register(ctx context.Context, request *authpb.RegisterRequest) (*
 	}
 	registerFromInput.Password = string(hash)
 
-	ctxErr2 := repository.SaveUser(registerFromInput,ctx)
+	ctxErr2 := repository.SaveUserRegister(registerFromInput,ctx)
 
 	if ctxErr2 != nil{
 		response := &authpb.RegisterResponse{Message:"Request timeout. Try again"}
@@ -131,6 +132,7 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 	claims, _ := token.Claims.(jwt.MapClaims)
 	signoutUserName := claims["username"].(string)
 	signoutUser, _, ctxErr := repository.ReturnUser(signoutUserName,ctx)
+	bkpUser := signoutUser
 
 	if ctxErr != nil{
 		response := &authpb.LogoutResponse{Message: "Request timeout. Try again"}
@@ -139,7 +141,7 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 
 	if signoutUser.Username != "" {
 		signoutUser.Token = ""
-		ctxErr2 := repository.SaveUser(signoutUser,ctx)
+		ctxErr2 := repository.SaveUser(signoutUser,ctx,bkpUser)
 		if ctxErr2 != nil{
 			response := &authpb.LogoutResponse{Message: "Request timeout. Try again"}
 			return response, nil
@@ -162,6 +164,7 @@ func (*server) FollowService(ctx context.Context, request *authpb.ProfileRequest
 	}
 
 	followUser, _, ctxErr2 := repository.ReturnUser(request.GetReqparm2(),ctx)
+	bkpUser := followUser
 
 	if ctxErr2 != nil{
 		response := &authpb.ProfileResponse{Resparm1: "Request timeout. Try again"}
@@ -183,7 +186,7 @@ func (*server) FollowService(ctx context.Context, request *authpb.ProfileRequest
 
 	if userPresent.Username != "" {
 		followUser.Followers.PushBack(userPresent)
-		ctxErr3 := repository.SaveUser(followUser,ctx)
+		ctxErr3 := repository.SaveUser(followUser,ctx,bkpUser)
 		if ctxErr3 != nil{
 			response := &authpb.ProfileResponse{Resparm1: "Request timeout. Try again"}
 			return response, nil
@@ -207,6 +210,7 @@ func (*server) UnfollowService(ctx context.Context, request *authpb.ProfileReque
 	}
 
 	unfollowUser, _, ctxErr2 := repository.ReturnUser(request.GetReqparm2(),ctx)
+	bkpUser := unfollowUser
 
 	if ctxErr2 != nil{
 		response := &authpb.ProfileResponse{Resparm1: "Request timeout. Try again"}
@@ -226,7 +230,7 @@ func (*server) UnfollowService(ctx context.Context, request *authpb.ProfileReque
 		k := e.Value.(authmodel.User)
 		if userPresent == k{
 			unfollowUser.Followers.Remove(e)
-			ctxErr3 := repository.SaveUser(unfollowUser,ctx)
+			ctxErr3 := repository.SaveUser(unfollowUser,ctx,bkpUser)
 			if ctxErr3 != nil{
 				response := &authpb.ProfileResponse{Resparm1: "Request timeout. Try again"}
 				return response, nil
