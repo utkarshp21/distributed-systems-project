@@ -135,5 +135,5 @@ func TestGetTweetList(t *testing.T) {
 	t.Log("Test GetTweetList successful")
 }
 
-//Test case InitialiseTweetsDB does nothing but initialises Tweets repo
-//Test case InitialiseTweetsDB with context cancel is similar to SaveUserRegister test case with context cancel
+//Test case for InitialiseTweetsDB does nothing but initialises Tweets repo
+//Test case  for InitialiseTweetsDB with context cancel is similar to SaveUserRegister test case with context cancel

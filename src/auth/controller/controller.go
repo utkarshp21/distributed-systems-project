@@ -4,11 +4,9 @@ import (
 	"html/template"
 	"net/http"
 	"time"
-
 	"auth/authpb"
 	"context"
 	"log"
-
 	"google.golang.org/grpc"
 )
 
