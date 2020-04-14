@@ -5,25 +5,22 @@ import (
 	"context"
 	profileStorage "profile/storage"
 	authmodel "auth/model"
+	"time"
+
 	//authRepository "auth/repository"
 )
 
 func SaveTweet(tweetUser string,tweetContent string,ctx context.Context)(error){
+	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
-	go profileStorage.SaveTweetDB(tweetUser,tweetContent,resultChan)
+	deleteChan := make(chan bool)
+	go profileStorage.SaveTweetDB(tweetUser,tweetContent,resultChan,deleteChan,ctx)
 	select {
 	case <-resultChan:
 		return nil
-	case <-ctx.Done():
-		DeleteTweet(tweetUser,tweetContent)
+	case <-deleteChan:
 		return ctx.Err()
 	}
-}
-
-func DeleteTweet(tweetUser string, tweetContent string) {
-	resultChan := make(chan bool)
-	go profileStorage.DeleteTweetDB(tweetUser, tweetContent,resultChan)
-	<-resultChan
 }
 
 func GetTweetList(followUsername string,ctx context.Context)(*list.List,error) {

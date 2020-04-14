@@ -2,17 +2,28 @@ package storage
 
 import (
 	"container/list"
+	"context"
 	profilemodel "profile/model"
 	authmodel "auth/model"
 )
 
 var Tweets = make(map[string]*list.List)
 
-func SaveTweetDB(tweetUser string,tweetContent string,resultChan chan bool){
+func SaveTweetDB(tweetUser string,tweetContent string,resultChan chan bool, deleteChan chan bool, ctx context.Context){
 	profilemodel.TweetsMux.Lock()
 	Tweets[tweetUser].PushBack(tweetContent)
-	profilemodel.TweetsMux.Unlock()
-	resultChan <- true
+
+	select {
+	case <-ctx.Done():
+		profilemodel.TweetsMux.Unlock()
+		channel := make(chan bool)
+		go DeleteTweetDB(tweetUser,tweetContent,channel)
+		<-channel
+		deleteChan <- true
+	default:
+		profilemodel.TweetsMux.Unlock()
+		resultChan <- true
+	}
 }
 
 func DeleteTweetDB(tweetUser string,tweetContent string,resultChan chan bool) {
