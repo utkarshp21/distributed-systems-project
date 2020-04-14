@@ -4,24 +4,30 @@ import (
 	"container/list"
 	"context"
 	"time"
-
-	//"fmt"
 	"strconv"
-	//authmodel "auth/model"
-	//authStorage "auth/storage"
 	"sync"
 	"testing"
-	//"golang.org/x/crypto/bcrypt"
 	profileStorage "profile/storage"
-	//profilemodel "profile/model"
 )
 
 
 func MockUpTweet() {
-	for i:= 0 ; i < 1000 ; i++{
+	for i:= 0 ; i < 10 ; i++{
 		tweetUser := "user"+strconv.Itoa(i)
 		profileStorage.Tweets[tweetUser] = list.New()
 	}
+}
+
+func MockUpTweetData() {
+	for i:= 0 ; i < 10 ; i++{
+		tweetUser := "user"+strconv.Itoa(i)
+		tweetList := list.New()
+		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 1")
+		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 2")
+		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 3")
+		profileStorage.Tweets[tweetUser] = tweetList
+	}
+
 }
 
 func TestSaveTweet(t *testing.T) {
@@ -108,3 +114,26 @@ func TestSaveTweetContext(t *testing.T) {
 	}
 	t.Log("Test SaveTweetContext successful")
 }
+
+//Test case for GetTweetList with context cancel is similar to without cancellation(error is returned)
+func TestGetTweetList(t *testing.T) {
+
+	MockUpTweetData()
+	wg := sync.WaitGroup{}
+	for i := 0 ; i < 10 ; i++ {
+		wg.Add(1)
+		go func(v int) {
+			defer wg.Done()
+			tweetUser := "user" + strconv.Itoa(v)
+			tweetList, err := GetTweetList(tweetUser,context.Background())
+			if err != nil || tweetList.Len() != 3{
+				t.Errorf("Getting list of tweets unsuccessful for user%d",i)
+			}
+		}(i)
+	}
+	wg.Wait()
+	t.Log("Test GetTweetList successful")
+}
+
+//Test case InitialiseTweetsDB does nothing but initialises Tweets repo
+//Test case InitialiseTweetsDB with context cancel is similar to SaveUserRegister test case with context cancel
