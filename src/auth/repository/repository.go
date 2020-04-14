@@ -18,9 +18,4 @@ func SaveUser(user authmodel.User){
 	<-resultChan
 }
 
-func SetCurrentUser(username string, user authmodel.User) {
-	resultChan := make(chan bool)
-	go authStorage.SetCurrentUserDB(username,user,resultChan)
-	<-resultChan
-}
 

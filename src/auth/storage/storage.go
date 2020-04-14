@@ -21,10 +21,3 @@ func SaveUserDB(user authmodel.User,resultChan chan bool)  {
 	authmodel.UsersMux.Unlock()
 	resultChan <- true
 }
-
-func SetCurrentUserDB(username string, user authmodel.User,resultChan chan bool )  {
-	authmodel.UsersMux.Lock()
-	Users[username] = user
-	authmodel.UsersMux.Unlock()
-	resultChan <- true
-}

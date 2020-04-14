@@ -13,8 +13,6 @@ import (
 	"log"
 	"net"
 	"google.golang.org/grpc"
-	//"google.golang.org/grpc/codes"
-	//"google.golang.org/grpc/status"
 
 )
 
@@ -47,7 +45,7 @@ func (*server) Login(ctx context.Context, request *authpb.LoginRequest) (*authpb
 		}
 
 		user.Token = tokenString
-		repository.SetCurrentUser(user.Username, user)
+		repository.SaveUser(user)
 
 		response := &authpb.LoginResponse{Message:"", Tokenstring: tokenString}
 		return response, nil
@@ -109,7 +107,7 @@ func (*server) Logout(ctx context.Context, request *authpb.LogoutRequest) (*auth
 
 	if signoutUser.Username != "" {
 		signoutUser.Token = ""
-		repository.SetCurrentUser(signoutUser.Username, signoutUser)
+		repository.SaveUser(signoutUser)
 		response := &authpb.LogoutResponse{Message: ""}
 		return response, nil
 	} else {
