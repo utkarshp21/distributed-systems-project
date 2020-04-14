@@ -7,12 +7,18 @@ import (
 
 var Users = make(map[string]authmodel.User)
 
-func ReturnUserDB(username string, resultChan chan authmodel.User, errChan chan bool)  {
+func ReturnUserDB(username string, resultChan chan authmodel.User, errChan chan bool,deleteChan chan bool, ctx context.Context)  {
 	authmodel.UsersMux.Lock()
 	user, exists := Users[username]
-	authmodel.UsersMux.Unlock()
-	resultChan <- user
-	errChan <- exists
+	select {
+	case <-ctx.Done():
+		authmodel.UsersMux.Unlock()
+		deleteChan <- true
+	default:
+		authmodel.UsersMux.Unlock()
+		resultChan <- user
+		errChan <- exists
+	}
 }
 
 func SaveUserRegisterDB(user authmodel.User,resultChan chan bool,deleteChan chan bool,ctx context.Context)  {

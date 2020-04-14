@@ -11,6 +11,55 @@ import (
 	"time"
 )
 
+func MockupUserData(){
+
+	for i:= 0 ; i < 10 ; i=i+2{
+
+		user := authmodel.User{
+			Username:"user"+strconv.Itoa(i),
+			Password: "1234",
+			FirstName: "us"+strconv.Itoa(i),
+			LastName: "er"+strconv.Itoa(i),
+			Followers: list.New(),
+		}
+		authStorage.Users[user.Username] = user
+	}
+
+}
+
+//Test case for ReturnUser with context cancellation is same as without(error is returned)
+
+func TestReturnUser(t *testing.T) {
+
+	MockupUserData()
+	count1 := 0
+	count2 := 0
+	var countLock = &sync.Mutex{}
+	wg := sync.WaitGroup{}
+	for i:=0 ; i < 10 ; i++ {
+		wg.Add(1)
+		go func(v int) {
+			defer wg.Done()
+			_,exists,_ := ReturnUser("user"+strconv.Itoa(v),context.Background())
+			if exists == false{
+				countLock.Lock()
+				count1 = count1 + 1
+				countLock.Unlock()
+			}else{
+				countLock.Lock()
+				count2 = count2 + 1
+				countLock.Unlock()
+			}
+		}(i)
+	}
+	wg.Wait()
+	if count1 == 5 && count2 == 5{
+		t.Log("Test SaveUserRegister succesful")
+	}else{
+		t.Errorf("Error in returning users")
+	}
+}
+
 //Test for SaveUser is same as test for SaveUserRegister without context cancelling
 
 func TestSaveUserRegister(t *testing.T) {

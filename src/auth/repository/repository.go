@@ -10,14 +10,15 @@ import (
 func ReturnUser(username string, ctx context.Context)(authmodel.User, bool, error){
 	resultChan := make(chan authmodel.User)
 	errChan := make(chan bool)
+	deleteChan := make(chan bool)
 	dummy := new(authmodel.User)
 	dummyUser := *dummy
-	go authStorage.ReturnUserDB(username,resultChan,errChan)
+	go authStorage.ReturnUserDB(username,resultChan,errChan,deleteChan,ctx)
 
 	select {
 	case res := <-resultChan :
 		return res, <-errChan, nil
-	case <-ctx.Done():
+	case <-deleteChan:
 		return dummyUser,false,ctx.Err()
 	}
 
