@@ -2,7 +2,7 @@ package storage
 
 import (
 	authmodel "auth/model"
-	//authStorage "auth/storage"
+	"context"
 )
 
 var Users = make(map[string]authmodel.User)
@@ -15,11 +15,21 @@ func ReturnUserDB(username string, resultChan chan authmodel.User, errChan chan 
 	errChan <- exists
 }
 
-func SaveUserDB(user authmodel.User,resultChan chan bool)  {
+func SaveUserRegisterDB(user authmodel.User,resultChan chan bool,deleteChan chan bool,ctx context.Context)  {
 	authmodel.UsersMux.Lock()
 	Users[user.Username] = user
-	authmodel.UsersMux.Unlock()
-	resultChan <- true
+
+	select {
+	case <-ctx.Done():
+		authmodel.UsersMux.Unlock()
+		channel := make(chan bool)
+		go DeleteUserDB(user,channel)
+		<-channel
+		deleteChan <- true
+	default:
+		authmodel.UsersMux.Unlock()
+		resultChan <- true
+	}
 }
 
 func DeleteUserDB(user authmodel.User,resultChan chan bool)  {
@@ -27,4 +37,29 @@ func DeleteUserDB(user authmodel.User,resultChan chan bool)  {
 	delete(Users,user.Username)
 	authmodel.UsersMux.Unlock()
 	resultChan <- true
+	return
+}
+
+func SaveUserDB(user authmodel.User,bkpUser authmodel.User,resultChan chan bool,deleteChan chan bool,ctx context.Context)  {
+	authmodel.UsersMux.Lock()
+	Users[user.Username] = user
+
+	select {
+	case <-ctx.Done():
+		authmodel.UsersMux.Unlock()
+		channel := make(chan bool)
+		go ModifyUserDB(bkpUser,channel)
+		<-channel
+		deleteChan <- true
+	default:
+		authmodel.UsersMux.Unlock()
+		resultChan <- true
+	}
+}
+
+func ModifyUserDB(user authmodel.User, channel chan bool) {
+	authmodel.UsersMux.Lock()
+	Users[user.Username] = user
+	authmodel.UsersMux.Unlock()
+	channel <- true
 }

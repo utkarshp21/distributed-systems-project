@@ -4,6 +4,7 @@ import (
 	authStorage "auth/storage"
 	authmodel "auth/model"
 	"context"
+	"time"
 )
 
 func ReturnUser(username string, ctx context.Context)(authmodel.User, bool, error){
@@ -23,43 +24,35 @@ func ReturnUser(username string, ctx context.Context)(authmodel.User, bool, erro
 }
 
 func SaveUserRegister(user authmodel.User, ctx context.Context)(error){
+	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
-	go authStorage.SaveUserDB(user,resultChan)
+	deleteChan := make(chan bool)
+	go authStorage.SaveUserRegisterDB(user,resultChan,deleteChan,ctx)
 
 	select {
 	case <-resultChan:
 		return nil
-	case <-ctx.Done():
-		DeleteUser(user)
+	case <-deleteChan:
 		return ctx.Err()
 	}
 
 }
 
-func DeleteUser(user authmodel.User) {
-	resultChan := make(chan bool)
-	go authStorage.DeleteUserDB(user,resultChan)
-	<-resultChan
-}
 
 func SaveUser(user authmodel.User, ctx context.Context, bkpUser authmodel.User)(error){
+	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
-	go authStorage.SaveUserDB(user,resultChan)
+	deleteChan := make(chan bool)
+	go authStorage.SaveUserDB(user,bkpUser,resultChan,deleteChan,ctx)
 
 	select {
 	case <-resultChan:
 		return nil
-	case <-ctx.Done():
-		ModifyUser(bkpUser)
+	case <-deleteChan:
 		return ctx.Err()
 	}
 
 }
 
-func ModifyUser(user authmodel.User) {
-	resultChan := make(chan bool)
-	go authStorage.SaveUserDB(user,resultChan)
-	<-resultChan
-}
 
 
