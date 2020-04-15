@@ -1,58 +1,74 @@
+## Change log v1.2:
+
+1.Making the webpage service stateless(monolith service)
+
+2.Changes from feedback of part 1:
+    
+	a) Vendoring dependencies
+	b) Added unfollow feature
+	c) Splitting code into business logic, repository and storage
+	d) Using log instead of printf statements
+	e) Updated test cases
+	f) UI changes:
+        1)Access to login/register page after login redirects to home page
+
+## Note:
+
+Due to the limited availability of time after receiving the feedback other UI changes suggested in Part 1 feedback are work in progress and will be fixed in Part 3
+
+A reminder to update the scores in Part 2 as the testcases(-15) and feature(-5) have been fixed
+
 ## Cloning the repo:
 
-git clone https://github.com/Distributed-Systems-CSGY9223/uf247-up293-final-project.git
+git clone https://github.com/Distributed-Systems-CSGY9223/uf247-up293-final-project.git -b rpc-call
 
 export GOPATH=$HOME/uf247-up293-final-project
 
-## Downloading dependencies:
+## Execution:
 
 cd uf247-up293-final-project/src
 
-go get "github.com/dgrijalva/jwt-go" github.com/dgrijalva/jwt-go
-
-go get "github.com/gorilla/mux" github.com/gorilla/mux
-
-go get "golang.org/x/crypto/bcrypt" golang.org/x/crypto/bcrypt
-
-## Execution:
-
 go run web.go
 
+go run auth/service/service.go (Run in a different terminal)
+
 Open http://localhost:8080/ on a browser (client)
+
 Click on register to register -> Login with credentials -> Profile
 
 Functionality:
 
-        1) Enter emailid to follow a user
-        2) Enter tweet message to tweet
-        3) Click on feed to see five recent tweets of your followers
-        4) Signout -> Destroys the cookie and removes the token for user
+    1) Enter emailid to follow a user
+    2) Enter tweet message to tweet
+    3) Click on feed to see five recent tweets of your followers
+    4) Signout -> Destroys the cookie and removes the token for user
         
 ## Test cases:
 
-auth_test.go:
+repo_test.go:
 
-        cd auth/controller
-        go test -v
-        go test -v - race
+    cd auth/repository
+    go test -v
+    go test -v - race
         
- TestSaveUser
+ Testcases:
  
- TestLoginUser
+    TestSaveUserRegister
+    TestSaveUserRegisterContext
+    TestSaveUserContext
+    TestReturnUser
  
- profile_test.go:
+ repo_test.go:
  
-        cd ../../profile/controller
-        go test -v
-        go test -v -race
+    cd ../../profile/repository
+    go test -v
+    go test -v -race
         
- TestFollowUser
+ Testcases:
  
- TestSaveTweet
- 
- TestFeedGenerate
- 
- TestSignoutUser
+    TestSaveTweet
+    TestSaveTweetContext
+    TestGetTweetList
         
  ## Note:
  
