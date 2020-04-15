@@ -299,10 +299,10 @@ func GetTopFiveTweets(tweetList *list.List,followUsername string)(string){
 	feed := ""
 	for k := tweetList.Back(); k != nil && numOfTweets > 0; k = k.Prev() {
 		numOfTweets = numOfTweets - 1
-		feed = feed + k.Value.(string) + "\n"
+		feed = feed + k.Value.(string) + " , "
 	}
 	if feed != ""{
-		feed = "Top 5 tweets from "+ followUsername + " : \n" + feed
+		feed = followUsername + ":" + feed + "$"
 	}
 	return feed
 

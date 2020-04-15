@@ -24,8 +24,27 @@
          <form action="/signout" method="post">
             <input type="submit" value="Signout">
           </form>
-          <p>
-            {{.Feed}}
+          <p id="demo">
           </p>
+          <style>
+            table, th, td {
+            padding: 10px;
+            border: 1px solid black; 
+            border-collapse: collapse;
+            }
+          </style>
+          <script>
+            var i;
+            var table = "<table><tr><th>Username</th><th>Top 5 tweets</th></tr>";
+            var list;
+            var feed = {{.Feed}}.split('$')
+            feed = feed.slice(0, feed.length - 1);
+            for(i=0;i<feed.length;i++){
+              list = feed[i].split(':')
+                table += "<tr><td>"+list[0]+"</td><td>"+list[1].slice(0, list[1].length - 1)+"</td></tr>"
+            }
+            table += "</table>"
+            document.getElementById("demo").innerHTML = table;
+          </script>
     </body>
 </html>
