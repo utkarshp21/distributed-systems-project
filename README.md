@@ -32,7 +32,7 @@ go run web.go
 
 go run auth/service/service.go (Run in a different terminal)
 
-Open http://localhost:8080/ on a browser (client)
+Open http://localhost:8000/ on a browser (client)
 
 Click on register to register -> Login with credentials -> Profile
 
