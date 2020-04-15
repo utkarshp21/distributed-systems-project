@@ -41,7 +41,7 @@
             feed = feed.slice(0, feed.length - 1);
             for(i=0;i<feed.length;i++){
               list = feed[i].split(':')
-                table += "<tr><td>"+list[0]+"</td><td>"+list[1].slice(0, list[1].length - 1)+"</td></tr>"
+              table += "<tr><td>"+list[0]+"</td><td>"+list[1].slice(0, list[1].length - 1)+"</td></tr>"
             }
             table += "</table>"
             document.getElementById("demo").innerHTML = table;
