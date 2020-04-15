@@ -39,9 +39,10 @@ Click on register to register -> Login with credentials -> Profile
 Functionality:
 
     1) Enter emailid to follow a user
-    2) Enter tweet message to tweet
-    3) Click on feed to see five recent tweets of your followers
-    4) Signout -> Destroys the cookie and removes the token for user
+    2) Enter emailid to unfollow a user
+    3) Enter tweet message to tweet
+    4) Click on feed to see five recent tweets of your followers
+    5) Signout -> Destroys the cookie and removes the token for user
         
 ## Test cases:
 
