@@ -11,7 +11,7 @@
 	e) Updated test cases
 	f) UI changes:
 	
-        1)Access to login/register page after login redirects to home page
+		1)Access to login/register page after login redirects to home page
 		2)Displaying feed as table
 
 ## Note:
