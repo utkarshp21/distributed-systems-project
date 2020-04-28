@@ -14,7 +14,6 @@ func main() {
 	r.HandleFunc("/", authController.LoginHandler)
 	r.HandleFunc("/register", authController.RegisterHandler)
 	r.HandleFunc("/login", authController.LoginHandler)
-	r.HandleFunc("/profile", profileController.ProfileHandler)
 	r.HandleFunc("/unfollow", profileController.UnfollowHandler)
 	r.HandleFunc("/follow", profileController.FollowHandler)
 	r.HandleFunc("/tweet", profileController.TweetHandler)

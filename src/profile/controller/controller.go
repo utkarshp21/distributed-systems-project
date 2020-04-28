@@ -31,33 +31,10 @@ func GetToken(c *http.Cookie) (*jwt.Token,error) {
 	return token, err
 }
 
-func ProfileHandler(w http.ResponseWriter, r *http.Request) {
-	
-	t, _ := template.ParseFiles("profile.gtpl")
-
-	c, err := r.Cookie("token")
-
-	if err != nil {
-		redirectToLogin(w)
-		return
-	}
-	token, tokenerr := GetToken(c)
-
-	if token.Valid && tokenerr == nil{
-		log.Println("Profile loaded succesfully")
-		t.Execute(w, nil)
-		return
-	}else{
-		redirectToLogin(w)
-		return
-	}
-
-}
-
 func FollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		http.Redirect(w, r, "/profile", http.StatusFound)
+		http.Redirect(w, r, "/feed", http.StatusFound)
 		return
 	}
 	m := map[string]interface{}{}
@@ -113,7 +90,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		http.Redirect(w, r, "/profile", http.StatusFound)
+		http.Redirect(w, r, "/feed", http.StatusFound)
 		return
 	}
 	m := map[string]interface{}{}
@@ -168,7 +145,7 @@ func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
 
 func TweetHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		http.Redirect(w, r, "/profile", http.StatusFound)
+		http.Redirect(w, r, "/feed", http.StatusFound)
 		return
 	}
 
@@ -223,10 +200,6 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FeedHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		http.Redirect(w, r, "/profile", http.StatusFound)
-		return
-	}
 
 	t, _ := template.ParseFiles("profile.gtpl")
 	m := map[string]interface{}{}

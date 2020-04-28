@@ -15,7 +15,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := r.Cookie("token")
 
 	if err == nil {
-		http.Redirect(w, r, "/profile", http.StatusFound)
+		http.Redirect(w, r, "/feed", http.StatusFound)
 		return
 	}
 
@@ -61,7 +61,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := r.Cookie("token")
 
 	if err == nil {
-		http.Redirect(w, r, "/profile", http.StatusFound)
+		http.Redirect(w, r, "/feed", http.StatusFound)
 		return
 	}
 
@@ -98,13 +98,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 				Value: response.Tokenstring,
 			})
 			log.Println("Login successful")
-			http.Redirect(w, r, "/profile", http.StatusFound)
+			http.Redirect(w, r, "/feed", http.StatusFound)
 			return
 		}
 	}
 }
 
 func SignoutHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/feed", http.StatusFound)
+		return
+	}
 
 	t, _ := template.ParseFiles("login.gtpl")
 	m := map[string]interface{}{}
