@@ -77,3 +77,7 @@ service TweetService{
 service FeedService{
     rpc FeedService(feedRequest) returns (feedResponse) {};
 }
+
+service UserListService{
+    rpc UserListService(feedRequest) returns (feedResponse) {};
+}

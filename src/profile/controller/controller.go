@@ -31,14 +31,65 @@ func GetToken(c *http.Cookie) (*jwt.Token,error) {
 	return token, err
 }
 
+func UserListHandler(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("userlist.gtpl")
+	m := map[string]interface{}{}
+
+	c, err := r.Cookie("token")
+
+	if err != nil {
+		redirectToLogin(w)
+		return
+	}
+
+	token, tokenerr := GetToken(c)
+	if !token.Valid && tokenerr != nil{
+		redirectToLogin(w)
+		return
+	}
+
+	claims, _ := token.Claims.(jwt.MapClaims)
+	feedUserUsername := claims["username"].(string)
+
+	var opts = grpc.WithInsecure()
+	var cc, ccerr = grpc.Dial("localhost:50051", opts)
+
+	if ccerr != nil {
+		log.Fatal(ccerr)
+	}
+
+	defer cc.Close()
+
+	client := authpb.NewUserListServiceClient(cc)
+
+	request := &authpb.FeedRequest{Reqparm1 : feedUserUsername}
+	response, _ := client.UserListService(context.Background(),request)
+
+	if response.GetResparm1() != "" {
+		m["Error"] = response.GetResparm1()
+		m["Success"] = nil
+		m["List"] = nil
+		log.Println(response.GetResparm1())
+		t.Execute(w, m)
+		return
+	}else {
+		m["Error"] = nil
+		m["Success"] = nil
+		m["List"] = response.GetResparm2()
+		log.Println("User List Succesfull")
+		t.Execute(w, m)
+		return
+	}
+}
+
 func FollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		http.Redirect(w, r, "/feed", http.StatusFound)
+		http.Redirect(w, r, "/userlist", http.StatusFound)
 		return
 	}
 	m := map[string]interface{}{}
-	t, _ := template.ParseFiles("profile.gtpl")
+	t, _ := template.ParseFiles("userlist.gtpl")
 
 	c, err := r.Cookie("token")
 
@@ -90,11 +141,11 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
-		http.Redirect(w, r, "/feed", http.StatusFound)
+		http.Redirect(w, r, "/userlist", http.StatusFound)
 		return
 	}
 	m := map[string]interface{}{}
-	t, _ := template.ParseFiles("profile.gtpl")
+	t, _ := template.ParseFiles("userlist.gtpl")
 
 	c, err := r.Cookie("token")
 

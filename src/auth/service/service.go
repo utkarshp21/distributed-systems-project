@@ -308,6 +308,34 @@ func GetTopFiveTweets(tweetList *list.List,followUsername string)(string){
 
 }
 
+func (*server) UserListService(ctx context.Context, request *authpb.FeedRequest) (*authpb.FeedResponse, error) {
+
+	userNameList, ctxErr1 := profileRepository.GetUsers(ctx)
+
+	if ctxErr1 != nil{
+		response := &authpb.FeedResponse{Resparm1: "Request timeout. Try again",Resparm2: ""}
+		return response, nil
+	}
+	userNameList += "$"
+	presentUser, _, ctxErr2 := repository.ReturnUser(request.GetReqparm1(),ctx)
+
+	if ctxErr2 != nil{
+		response := &authpb.FeedResponse{Resparm1: "Request timeout. Try again",Resparm2: ""}
+		return response, nil
+	}
+
+	for e:= presentUser.Followers.Front(); e != nil; e = e.Next(){
+		followUser := e.Value.(authmodel.User)
+		userNameList += followUser.Username + ","
+	}
+	if userNameList[len(userNameList)-1] == byte(','){
+		userNameList = userNameList[:len(userNameList)-1]
+	}
+
+	response := &authpb.FeedResponse{Resparm1: "",Resparm2: userNameList}
+	return response, nil
+}
+
 func main() {
 	address := "0.0.0.0:50051"
 	lis, err := net.Listen("tcp", address)
@@ -324,6 +352,7 @@ func main() {
 	authpb.RegisterUnfollowServiceServer(s, &server{})
 	authpb.RegisterTweetServiceServer(s, &server{})
 	authpb.RegisterFeedServiceServer(s, &server{})
+	authpb.RegisterUserListServiceServer(s, &server{})
 
 	s.Serve(lis)
 }

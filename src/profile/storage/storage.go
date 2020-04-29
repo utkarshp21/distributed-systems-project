@@ -66,3 +66,20 @@ func InitialiseTweetsDB(user authmodel.User, resultChan chan bool,deleteChan cha
 		resultChan <- true
 	}
 }
+
+func GetUsersDB(resultChan chan string,deleteChan chan bool, ctx context.Context)  {
+	authmodel.UsersMux.Lock()
+	keys := ""
+	for k := range authStorage.Users {
+		keys += k + ","
+	}
+	keys = keys[:len(keys)-1]
+	select {
+	case <-ctx.Done():
+		authmodel.UsersMux.Unlock()
+		deleteChan <- true
+	default:
+		authmodel.UsersMux.Unlock()
+		resultChan <- keys
+	}
+}

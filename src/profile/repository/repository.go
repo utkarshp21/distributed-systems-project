@@ -48,3 +48,15 @@ func InitialiseTweets(user authmodel.User,ctx context.Context)(error){
 		return ctx.Err()
 	}
 }
+
+func GetUsers(ctx context.Context)(string,error)  {
+	resultChan := make(chan string)
+	deleteChan := make(chan bool)
+	go profileStorage.GetUsersDB(resultChan,deleteChan,ctx)
+	select {
+	case res := <-resultChan:
+		return res,nil
+	case <-deleteChan:
+		return "",ctx.Err()
+	}
+}
