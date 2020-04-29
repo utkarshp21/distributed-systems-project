@@ -6,11 +6,13 @@ import (
 	profilemodel "profile/model"
 	authmodel "auth/model"
 	authStorage "auth/storage"
+	"time"
 )
 
 var Tweets = make(map[string]*list.List)
 
 func SaveTweetDB(tweetUser string,tweetContent string,resultChan chan bool, deleteChan chan bool, ctx context.Context){
+	tweetContent += "*"+time.Now().Format("2006-01-02 15:04:05")
 	profilemodel.TweetsMux.Lock()
 	Tweets[tweetUser].PushBack(tweetContent)
 

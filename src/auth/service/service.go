@@ -286,6 +286,7 @@ func (*server) FeedService(ctx context.Context, request *authpb.FeedRequest) (*a
 	}
 
 	if feed != "" {
+		feed = feed[:len(feed)-1]
 		response := &authpb.FeedResponse{Resparm1: "",Resparm2: feed}
 		return response, nil
 	} else {
@@ -299,10 +300,12 @@ func GetTopFiveTweets(tweetList *list.List,followUsername string)(string){
 	feed := ""
 	for k := tweetList.Back(); k != nil && numOfTweets > 0; k = k.Prev() {
 		numOfTweets = numOfTweets - 1
-		feed = feed + k.Value.(string) + " , "
+		feed = feed + k.Value.(string) + ","
 	}
+
 	if feed != ""{
-		feed = followUsername + ":" + feed + "$"
+		feed = feed[:len(feed)-1]
+		feed = followUsername + "^" + feed + "$"
 	}
 	return feed
 

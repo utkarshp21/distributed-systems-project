@@ -24,21 +24,27 @@
           <style>
             table, th, td {
             padding: 10px;
-            border: 1px solid black; 
+            border: 1px solid black;
             border-collapse: collapse;
             }
           </style>
           <script>
             var i;
-            var table = "<table><tr><th>Username</th><th>Top 5 tweets</th></tr>";
+            var j;
+            var table = "";
             var list;
-            var feed = {{.Feed}}.split('$')
-            feed = feed.slice(0, feed.length - 1);
+            var feed = {{.Feed}}.split('$');
             for(i=0;i<feed.length;i++){
-              list = feed[i].split(':')
-              table += "<tr><td>"+list[0]+"</td><td>"+list[1].slice(0, list[1].length - 1)+"</td></tr>"
-            }
-            table += "</table>"
+              list = feed[i].split('^');
+              table += "Top 5 tweets from : "+list[0]+"<br><br>";
+              tweetlist = list[1].split(',');
+              table += "<table><tr><th>Tweet</th><th>Timestamp</th></tr>"
+              for(j=0;j<tweetlist.length;j++){
+              	tweet = tweetlist[j].split('*');
+              	table += "<tr><td>"+tweet[0]+"</td><td>"+tweet[1]+"</td></tr>"
+                }
+                table += "</table><br>"
+              }
             document.getElementById("demo").innerHTML = table;
           </script>
     </body>
