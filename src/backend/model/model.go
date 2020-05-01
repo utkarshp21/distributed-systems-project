@@ -14,9 +14,4 @@ type User struct {
 	Followers *list.List `json:"followers"`
 }
 
-type ResponseResult struct {
-	Error  string `json:"error"`
-	Result string `json:"result"`
-}
-
 var UsersMux = &sync.Mutex{}

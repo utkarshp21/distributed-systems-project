@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"sync"
 	"testing"
-	authStorage "auth/storage"
-	authmodel "auth/model"
+	authStorage "backend/storage"
+	authmodel "backend/model"
 	"time"
 )
 

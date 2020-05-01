@@ -4,8 +4,8 @@ import (
 	"container/list"
 	"context"
 	profilemodel "profile/model"
-	authmodel "auth/model"
-	authStorage "auth/storage"
+	authmodel "backend/model"
+	authStorage "backend/storage"
 	"time"
 )
 

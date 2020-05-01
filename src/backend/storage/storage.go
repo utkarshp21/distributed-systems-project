@@ -1,7 +1,7 @@
 package storage
 
 import (
-	authmodel "auth/model"
+	authmodel "backend/model"
 	"context"
 )
 

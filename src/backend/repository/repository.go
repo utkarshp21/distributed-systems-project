@@ -1,8 +1,8 @@
 package repository
 
 import (
-	authStorage "auth/storage"
-	authmodel "auth/model"
+	authStorage "backend/storage"
+	authmodel "backend/model"
 	"context"
 	"time"
 )

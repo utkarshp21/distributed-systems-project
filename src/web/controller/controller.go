@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"time"
-	"auth/proto"
+	"backend/proto"
 	"context"
 	"log"
 	"google.golang.org/grpc"

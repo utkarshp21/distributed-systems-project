@@ -1,7 +1,7 @@
 package main
 
 import (
-	//authController "auth/controller"
+	//authController "backend/controller"
 	"log"
 	"net/http"
 	//profileController "profile/controller"

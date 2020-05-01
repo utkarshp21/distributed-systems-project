@@ -1,14 +1,14 @@
 package main
 
 import (
-	authmodel "auth/model"
-	repository "auth/repository"
+	authmodel "backend/model"
+	repository "backend/repository"
 	"container/list"
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 	profileRepository "profile/repository"
-	"auth/proto"
+	"backend/proto"
 	"context"
 	"log"
 	"net"

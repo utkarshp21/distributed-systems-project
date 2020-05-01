@@ -4,10 +4,10 @@ import (
 	"container/list"
 	"context"
 	profileStorage "profile/storage"
-	authmodel "auth/model"
+	authmodel "backend/model"
 	"time"
 
-	//authRepository "auth/repository"
+	//authRepository "backend/repository"
 )
 
 func SaveTweet(tweetUser string,tweetContent string,ctx context.Context)(error){
