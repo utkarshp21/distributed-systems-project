@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"sync"
 	"testing"
-	authStorage "backend/storage"
 	authmodel "backend/model"
 	"time"
 )
@@ -22,7 +21,7 @@ func MockupUserData(){
 			LastName: "er"+strconv.Itoa(i),
 			Followers: list.New(),
 		}
-		authStorage.Users[user.Username] = user
+		Users[user.Username] = user
 	}
 
 }
@@ -51,10 +50,10 @@ func TestSaveUserRegister(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-	if len(authStorage.Users) == 10{
+	if len(Users) == 10{
 		t.Log("Test SaveUserRegister succesful")
 	}else{
-		t.Errorf("Number of users missing %d",10-len(authStorage.Users))
+		t.Errorf("Number of users missing %d",10-len(Users))
 	}
 }
 
@@ -96,11 +95,11 @@ func TestSaveUserRegisterContext(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-	t.Log(authStorage.Users)
-	if len(authStorage.Users) == 5{
+	t.Log(Users)
+	if len(Users) == 5{
 		t.Log("Test SaveUserRegister succesful")
 	}else{
-		t.Errorf("Number of users missing %d",5-len(authStorage.Users))
+		t.Errorf("Number of users missing %d",5-len(Users))
 	}
 }
 
@@ -144,10 +143,10 @@ func TestSaveUserContext(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-	t.Log(authStorage.Users)
+	t.Log(Users)
 	count := 0
 	for i:=0 ; i<10 ; i++{
-		user := authStorage.Users["user"+strconv.Itoa(i)+"@gmail.com"]
+		user := Users["user"+strconv.Itoa(i)+"@gmail.com"]
 		if user.Token != ""{
 			count = count + 1
 		}
