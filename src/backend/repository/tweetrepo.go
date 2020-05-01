@@ -2,7 +2,7 @@ package repository
 
 import (
 	model "backend/model"
-	authRepository "backend/repository"
+	//authRepository "backend/repository"
 	"container/list"
 	"context"
 	//profileStorage "profile/storage"
@@ -87,7 +87,6 @@ func InitialiseTweets(user model.User,ctx context.Context)(error){
 	case <-resultChan:
 		return nil
 	case <-deleteChan:
-		//authRepository.DeleteUser(user)
 		return ctx.Err()
 	}
 }
@@ -99,7 +98,7 @@ func InitialiseTweetsDB(user model.User, resultChan chan bool,deleteChan chan bo
 	case <-ctx.Done():
 		model.TweetsMux.Unlock()
 		channel := make(chan bool)
-		go authRepository.DeleteUserDB(user,channel)
+		go DeleteUserDB(user,channel)
 		<-channel
 		deleteChan <- true
 	default:

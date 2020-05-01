@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	profileRepository "profile/repository"
+	//repository "profile/repository"
 )
 
 type server struct {
@@ -104,7 +104,7 @@ func (*server) Register(ctx context.Context, request *proto.RegisterRequest) (*p
 		return response, nil
 	}
 
-	ctxErr3 := profileRepository.InitialiseTweets(registerFromInput,ctx)
+	ctxErr3 := repository.InitialiseTweets(registerFromInput,ctx)
 
 	if ctxErr3 != nil{
 		response := &proto.RegisterResponse{Message:"Request timeout. Try again"}
@@ -249,7 +249,7 @@ func (*server) TweetService(ctx context.Context, request *proto.ProfileRequest) 
 	tweetUser := request.GetReqparm2()
 
 	if tweetContent != "" {
-		ctxErr := profileRepository.SaveTweet(tweetUser,tweetContent,ctx)
+		ctxErr := repository.SaveTweet(tweetUser,tweetContent,ctx)
 		if ctxErr != nil{
 			response := &proto.ProfileResponse{Resparm1: "Request timeout. Try again"}
 			return response, nil
@@ -276,7 +276,7 @@ func (*server) FeedService(ctx context.Context, request *proto.FeedRequest) (*pr
 	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
 		followUser := e.Value.(model.User)
 		followUsername := followUser.Username
-		tweetList, ctxErr2 := profileRepository.GetTweetList(followUsername,ctx)
+		tweetList, ctxErr2 := repository.GetTweetList(followUsername,ctx)
 		if ctxErr2 != nil{
 			response := &proto.FeedResponse{Resparm1: "Request timeout. Try again",Resparm2: ""}
 			return response, nil
