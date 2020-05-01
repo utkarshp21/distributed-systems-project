@@ -1,19 +1,18 @@
 package main
 
 import (
-	authmodel "backend/model"
+	model "backend/model"
+	"backend/proto"
 	repository "backend/repository"
 	"container/list"
+	"context"
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
-	profileRepository "profile/repository"
-	"backend/proto"
-	"context"
+	"google.golang.org/grpc"
 	"log"
 	"net"
-	"google.golang.org/grpc"
-
+	profileRepository "profile/repository"
 )
 
 type server struct {
@@ -83,7 +82,7 @@ func (*server) Register(ctx context.Context, request *proto.RegisterRequest) (*p
 		return response, nil
 	}
 
-	registerFromInput := authmodel.User{
+	registerFromInput := model.User{
 		Username:  request.Username,
 		Password:  request.Password,
 		FirstName: request.Firstname,
@@ -177,7 +176,7 @@ func (*server) FollowService(ctx context.Context, request *proto.ProfileRequest)
 	}
 
 	for e := followUser.Followers.Front() ; e != nil ; e = e.Next(){
-		k := e.Value.(authmodel.User)
+		k := e.Value.(model.User)
 		if userPresent == k{
 			response := &proto.ProfileResponse{Resparm1: "User already followed"}
 			return response, nil
@@ -227,7 +226,7 @@ func (*server) UnfollowService(ctx context.Context, request *proto.ProfileReques
 		return response, nil	}
 
 	for e := unfollowUser.Followers.Front() ; e != nil ; e = e.Next(){
-		k := e.Value.(authmodel.User)
+		k := e.Value.(model.User)
 		if userPresent == k{
 			unfollowUser.Followers.Remove(e)
 			ctxErr3 := repository.SaveUser(unfollowUser,ctx,bkpUser)
@@ -275,7 +274,7 @@ func (*server) FeedService(ctx context.Context, request *proto.FeedRequest) (*pr
 	feed := ""
 
 	for e:= feedUser.Followers.Front(); e != nil; e = e.Next(){
-		followUser := e.Value.(authmodel.User)
+		followUser := e.Value.(model.User)
 		followUsername := followUser.Username
 		tweetList, ctxErr2 := profileRepository.GetTweetList(followUsername,ctx)
 		if ctxErr2 != nil{
@@ -313,7 +312,7 @@ func GetTopFiveTweets(tweetList *list.List,followUsername string)(string){
 
 func (*server) UserListService(ctx context.Context, request *proto.FeedRequest) (*proto.FeedResponse, error) {
 
-	userNameList, ctxErr1 := profileRepository.GetUsers(ctx)
+	userNameList, ctxErr1 := repository.GetUsers(ctx)
 
 	if ctxErr1 != nil{
 		response := &proto.FeedResponse{Resparm1: "Request timeout. Try again",Resparm2: ""}
@@ -328,7 +327,7 @@ func (*server) UserListService(ctx context.Context, request *proto.FeedRequest) 
 	}
 
 	for e:= presentUser.Followers.Front(); e != nil; e = e.Next(){
-		followUser := e.Value.(authmodel.User)
+		followUser := e.Value.(model.User)
 		userNameList += followUser.Username + ","
 	}
 	if userNameList[len(userNameList)-1] == byte(','){

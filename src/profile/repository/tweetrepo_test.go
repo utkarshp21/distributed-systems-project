@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"sync"
 	"testing"
-	profileStorage "profile/storage"
+	//profileStorage "profile/repository"
 )
 
 
 func MockUpTweet() {
 	for i:= 0 ; i < 10 ; i++{
 		tweetUser := "user"+strconv.Itoa(i)
-		profileStorage.Tweets[tweetUser] = list.New()
+		Tweets[tweetUser] = list.New()
 	}
 }
 
@@ -25,7 +25,7 @@ func MockUpTweetData() {
 		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 1")
 		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 2")
 		tweetList.PushBack("user"+strconv.Itoa(i)+" tweet 3")
-		profileStorage.Tweets[tweetUser] = tweetList
+		Tweets[tweetUser] = tweetList
 	}
 
 }
@@ -51,7 +51,7 @@ func TestSaveTweet(t *testing.T) {
 
 	for i := 0 ; i < 10 ; i++ {
 		tweetUser := "user" + strconv.Itoa(i)
-		if profileStorage.Tweets[tweetUser].Len() != 3{
+		if Tweets[tweetUser].Len() != 3{
 			t.Error("Error while saving tweet of"+tweetUser)
 		}
 	}
@@ -93,22 +93,22 @@ func TestSaveTweetContext(t *testing.T) {
 	wg.Wait()
 
 	t.Log("Tweets of user0")
-	for e:=profileStorage.Tweets["user0"].Front(); e !=nil; e = e.Next(){
+	for e:=Tweets["user0"].Front(); e !=nil; e = e.Next(){
 		t.Log(e.Value)
 	}
 
 	t.Log("Tweets of user1")
-	for e:=profileStorage.Tweets["user1"].Front(); e !=nil; e = e.Next(){
+	for e:=Tweets["user1"].Front(); e !=nil; e = e.Next(){
 		t.Log(e.Value)
 	}
 
 	for i := 0 ; i < 10 ; i=i+2 {
 		tweetUser := "user" + strconv.Itoa(i)
-		if profileStorage.Tweets[tweetUser].Len() != 3{
+		if Tweets[tweetUser].Len() != 3{
 			t.Error("Error while saving tweet of"+tweetUser)
 		}
 		tweetUser2 := "user" + strconv.Itoa(i+1)
-		if profileStorage.Tweets[tweetUser2].Len() != 0{
+		if Tweets[tweetUser2].Len() != 0{
 			t.Error("Error while saving tweet of"+tweetUser)
 		}
 	}
