@@ -1,12 +1,10 @@
 package main
 
 import (
-	//authController "backend/controller"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	//profileController "profile/controller"
-	"github.com/gorilla/mux"
-	controller "web/controller"
+	"web/controller"
 )
 
 func main() {

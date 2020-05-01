@@ -1,9 +1,9 @@
 package main
 
 import (
-	model "backend/model"
+	"backend/model"
 	"backend/proto"
-	repository "backend/repository"
+	"backend/repository"
 	"container/list"
 	"context"
 	"fmt"
@@ -273,7 +273,9 @@ func (*server) FeedService(ctx context.Context, request *proto.FeedRequest) (*pr
 			response := &proto.FeedResponse{Resparm1: "Request timeout. Try again",Resparm2: ""}
 			return response, nil
 		}
-		feed = feed + GetTopFiveTweets(tweetList,followUsername)
+		if tweetList != nil{
+			feed = feed + GetTopFiveTweets(tweetList,followUsername)
+		}
 	}
 
 	if feed != "" {

@@ -1,15 +1,15 @@
 package controller
 
 import (
-	"fmt"
-	"html/template"
-	"net/http"
-	"time"
 	"backend/proto"
 	"context"
-	"log"
-	"google.golang.org/grpc"
+	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
+	"google.golang.org/grpc"
+	"html/template"
+	"log"
+	"net/http"
+	"time"
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
