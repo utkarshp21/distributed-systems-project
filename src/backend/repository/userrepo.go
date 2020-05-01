@@ -1,11 +1,12 @@
 package repository
 
 import (
-	authStorage "backend/storage"
 	authmodel "backend/model"
 	"context"
 	"time"
 )
+
+var Users = make(map[string]authmodel.User)
 
 func ReturnUser(username string, ctx context.Context)(authmodel.User, bool, error){
 	resultChan := make(chan authmodel.User)
@@ -13,7 +14,7 @@ func ReturnUser(username string, ctx context.Context)(authmodel.User, bool, erro
 	deleteChan := make(chan bool)
 	dummy := new(authmodel.User)
 	dummyUser := *dummy
-	go authStorage.ReturnUserDB(username,resultChan,errChan,deleteChan,ctx)
+	go ReturnUserDB(username,resultChan,errChan,deleteChan,ctx)
 
 	select {
 	case res := <-resultChan :
@@ -24,11 +25,25 @@ func ReturnUser(username string, ctx context.Context)(authmodel.User, bool, erro
 
 }
 
+func ReturnUserDB(username string, resultChan chan authmodel.User, errChan chan bool,deleteChan chan bool, ctx context.Context)  {
+	authmodel.UsersMux.Lock()
+	user, exists := Users[username]
+	select {
+	case <-ctx.Done():
+		authmodel.UsersMux.Unlock()
+		deleteChan <- true
+	default:
+		authmodel.UsersMux.Unlock()
+		resultChan <- user
+		errChan <- exists
+	}
+}
+
 func SaveUserRegister(user authmodel.User, ctx context.Context)(error){
 	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
 	deleteChan := make(chan bool)
-	go authStorage.SaveUserRegisterDB(user,resultChan,deleteChan,ctx)
+	go SaveUserRegisterDB(user,resultChan,deleteChan,ctx)
 
 	select {
 	case <-resultChan:
@@ -39,12 +54,36 @@ func SaveUserRegister(user authmodel.User, ctx context.Context)(error){
 
 }
 
+func SaveUserRegisterDB(user authmodel.User,resultChan chan bool,deleteChan chan bool,ctx context.Context)  {
+	authmodel.UsersMux.Lock()
+	Users[user.Username] = user
+
+	select {
+	case <-ctx.Done():
+		authmodel.UsersMux.Unlock()
+		channel := make(chan bool)
+		go DeleteUserDB(user,channel)
+		<-channel
+		deleteChan <- true
+	default:
+		authmodel.UsersMux.Unlock()
+		resultChan <- true
+	}
+}
+
+func DeleteUserDB(user authmodel.User,resultChan chan bool)  {
+	authmodel.UsersMux.Lock()
+	delete(Users,user.Username)
+	authmodel.UsersMux.Unlock()
+	resultChan <- true
+	return
+}
 
 func SaveUser(user authmodel.User, ctx context.Context, bkpUser authmodel.User)(error){
 	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
 	deleteChan := make(chan bool)
-	go authStorage.SaveUserDB(user,bkpUser,resultChan,deleteChan,ctx)
+	go SaveUserDB(user,bkpUser,resultChan,deleteChan,ctx)
 
 	select {
 	case <-resultChan:
@@ -55,5 +94,28 @@ func SaveUser(user authmodel.User, ctx context.Context, bkpUser authmodel.User)(
 
 }
 
+func SaveUserDB(user authmodel.User,bkpUser authmodel.User,resultChan chan bool,deleteChan chan bool,ctx context.Context)  {
+	authmodel.UsersMux.Lock()
+	Users[user.Username] = user
+
+	select {
+	case <-ctx.Done():
+		authmodel.UsersMux.Unlock()
+		channel := make(chan bool)
+		go ModifyUserDB(bkpUser,channel)
+		<-channel
+		deleteChan <- true
+	default:
+		authmodel.UsersMux.Unlock()
+		resultChan <- true
+	}
+}
+
+func ModifyUserDB(user authmodel.User, channel chan bool) {
+	authmodel.UsersMux.Lock()
+	Users[user.Username] = user
+	authmodel.UsersMux.Unlock()
+	channel <- true
+}
 
 

@@ -3,9 +3,9 @@ package storage
 import (
 	"container/list"
 	"context"
-	profilemodel "profile/model"
+	profilemodel "backend/model"
 	authmodel "backend/model"
-	authStorage "backend/storage"
+	authStorage "backend/repository"
 	"time"
 )
 
