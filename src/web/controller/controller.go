@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"time"
-	"auth/authpb"
+	"auth/proto"
 	"context"
 	"log"
 	"google.golang.org/grpc"
@@ -37,10 +37,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer cc.Close()
 
-		client := authpb.NewTwitterClient(cc)
+		client := proto.NewTwitterClient(cc)
 
 		r.ParseForm()
-		request := &authpb.RegisterRequest{Firstname: r.Form["firstname"][0], Lastname:r.Form["lastname"][0], Username:r.Form["username"][0], Password:r.Form["password"][0]}
+		request := &proto.RegisterRequest{Firstname: r.Form["firstname"][0], Lastname:r.Form["lastname"][0], Username:r.Form["username"][0], Password:r.Form["password"][0]}
 		response, _ := client.Register(context.Background(), request)
 
 		if response.Message != "" {
@@ -83,10 +83,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer cc.Close()
 
-		client := authpb.NewTwitterClient(cc)
+		client := proto.NewTwitterClient(cc)
 
 		r.ParseForm()
-		request := &authpb.LoginRequest{Username: r.Form["username"][0], Password: r.Form["password"][0]}
+		request := &proto.LoginRequest{Username: r.Form["username"][0], Password: r.Form["password"][0]}
 		response , _ := client.Login(context.Background(), request)
 
 		if response.Message != "" {
@@ -136,9 +136,9 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewTwitterClient(cc)
+	client := proto.NewTwitterClient(cc)
 
-	request := &authpb.LogoutRequest{Tokenstring: tokenString}
+	request := &proto.LogoutRequest{Tokenstring: tokenString}
 
 	response, _ := client.Logout(context.Background(), request)
 
@@ -209,9 +209,9 @@ func UserListHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewTwitterClient(cc)
+	client := proto.NewTwitterClient(cc)
 
-	request := &authpb.FeedRequest{Reqparm1 : feedUserUsername}
+	request := &proto.FeedRequest{Reqparm1 : feedUserUsername}
 	response, _ := client.UserListService(context.Background(),request)
 
 	if response.GetResparm1() != "" {
@@ -267,9 +267,9 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewTwitterClient(cc)
+	client := proto.NewTwitterClient(cc)
 
-	request := &authpb.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: followuserUsername}
+	request := &proto.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: followuserUsername}
 	response, _ := client.FollowService(context.Background(),request)
 
 	if response.GetResparm1() != "" {
@@ -323,9 +323,9 @@ func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewTwitterClient(cc)
+	client := proto.NewTwitterClient(cc)
 
-	request := &authpb.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: unfollowuserUsername}
+	request := &proto.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: unfollowuserUsername}
 	response, _ := client.UnfollowService(context.Background(),request)
 
 	if response.GetResparm1() != "" {
@@ -379,9 +379,9 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewTwitterClient(cc)
+	client := proto.NewTwitterClient(cc)
 
-	request := &authpb.ProfileRequest{Reqparm1 : tweetContent, Reqparm2: tweetUserUsername}
+	request := &proto.ProfileRequest{Reqparm1 : tweetContent, Reqparm2: tweetUserUsername}
 	response, _ := client.TweetService(context.Background(),request)
 
 	if response.GetResparm1() != "" {
@@ -429,9 +429,9 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewTwitterClient(cc)
+	client := proto.NewTwitterClient(cc)
 
-	request := &authpb.FeedRequest{Reqparm1 : feedUserUsername}
+	request := &proto.FeedRequest{Reqparm1 : feedUserUsername}
 	response, _ := client.FeedService(context.Background(),request)
 
 	if response.GetResparm1() != "" {
