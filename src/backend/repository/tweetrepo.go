@@ -2,17 +2,14 @@ package repository
 
 import (
 	model "backend/model"
-	//authRepository "backend/repository"
 	"container/list"
 	"context"
-	//profileStorage "profile/storage"
 	"time"
 )
 
 var Tweets = make(map[string]*list.List)
 
 func SaveTweet(tweetUser string,tweetContent string,ctx context.Context)(error){
-	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
 	deleteChan := make(chan bool)
 	go SaveTweetDB(tweetUser,tweetContent,resultChan,deleteChan,ctx)
@@ -27,6 +24,9 @@ func SaveTweet(tweetUser string,tweetContent string,ctx context.Context)(error){
 func SaveTweetDB(tweetUser string,tweetContent string,resultChan chan bool, deleteChan chan bool, ctx context.Context){
 	tweetContent += "*"+time.Now().Format("2006-01-02 15:04:05")
 	model.TweetsMux.Lock()
+	if Tweets[tweetUser] == nil{
+		Tweets[tweetUser] = list.New()
+	}
 	Tweets[tweetUser].PushBack(tweetContent)
 
 	select {
@@ -76,33 +76,5 @@ func GetTweetListDB(followUsername string, resultChan chan *list.List,deleteChan
 	default:
 		model.TweetsMux.Unlock()
 		resultChan <- tweetList
-	}
-}
-
-func InitialiseTweets(user model.User,ctx context.Context)(error){
-	resultChan := make(chan bool)
-	deleteChan := make(chan bool)
-	go InitialiseTweetsDB(user, resultChan,deleteChan,ctx)
-	select {
-	case <-resultChan:
-		return nil
-	case <-deleteChan:
-		return ctx.Err()
-	}
-}
-
-func InitialiseTweetsDB(user model.User, resultChan chan bool,deleteChan chan bool, ctx context.Context) {
-	model.TweetsMux.Lock()
-	Tweets[user.Username] = list.New()
-	select {
-	case <-ctx.Done():
-		model.TweetsMux.Unlock()
-		channel := make(chan bool)
-		go DeleteUserDB(user,channel)
-		<-channel
-		deleteChan <- true
-	default:
-		model.TweetsMux.Unlock()
-		resultChan <- true
 	}
 }

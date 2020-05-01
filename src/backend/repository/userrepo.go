@@ -3,7 +3,6 @@ package repository
 import (
 	model "backend/model"
 	"context"
-	"time"
 )
 
 var Users = make(map[string]model.User)
@@ -40,7 +39,6 @@ func ReturnUserDB(username string, resultChan chan model.User, errChan chan bool
 }
 
 func SaveUserRegister(user model.User, ctx context.Context)(error){
-	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
 	deleteChan := make(chan bool)
 	go SaveUserRegisterDB(user,resultChan,deleteChan,ctx)
@@ -80,7 +78,6 @@ func DeleteUserDB(user model.User,resultChan chan bool)  {
 }
 
 func SaveUser(user model.User, ctx context.Context, bkpUser model.User)(error){
-	time.Sleep(10*time.Millisecond)
 	resultChan := make(chan bool)
 	deleteChan := make(chan bool)
 	go SaveUserDB(user,bkpUser,resultChan,deleteChan,ctx)

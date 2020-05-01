@@ -1,12 +1,12 @@
 package repository
 
 import (
+	"backend/model"
 	"container/list"
 	"context"
 	"strconv"
 	"sync"
 	"testing"
-	authmodel "backend/model"
 	"time"
 )
 
@@ -14,7 +14,7 @@ func MockupUserData(){
 
 	for i:= 0 ; i < 10 ; i=i+2{
 
-		user := authmodel.User{
+		user := model.User{
 			Username:"user"+strconv.Itoa(i),
 			Password: "1234",
 			FirstName: "us"+strconv.Itoa(i),
@@ -36,7 +36,7 @@ func TestSaveUserRegister(t *testing.T) {
 		go func(v int) {
 			defer wg.Done()
 
-			user := authmodel.User{
+			user := model.User{
 				Username:  "user"+strconv.Itoa(v)+"@gmail.com",
 				Password:  "1234",
 				FirstName: "us"+strconv.Itoa(v),
@@ -65,7 +65,7 @@ func TestSaveUserRegisterContext(t *testing.T) {
 		go func(v int) {
 			defer wg.Done()
 
-			user := authmodel.User{
+			user := model.User{
 				Username:  "user"+strconv.Itoa(v)+"@gmail.com",
 				Password:  "1234",
 				FirstName: "us"+strconv.Itoa(v),
@@ -83,7 +83,7 @@ func TestSaveUserRegisterContext(t *testing.T) {
 				}
 			}else{
 				ctx , cancel := context.WithTimeout(context.Background(),time.Duration(1)*time.Millisecond)
-				defer cancel()
+				cancel()
 				err := SaveUserRegister(user,ctx)
 				if err != nil {
 					t.Log("Problem in adding user:",v)
@@ -111,7 +111,7 @@ func TestSaveUserContext(t *testing.T) {
 		go func(v int) {
 			defer wg.Done()
 
-			user := authmodel.User{
+			user := model.User{
 				Username:  "user"+strconv.Itoa(v)+"@gmail.com",
 				Password:  "1234",
 				FirstName: "us"+strconv.Itoa(v),
@@ -131,7 +131,7 @@ func TestSaveUserContext(t *testing.T) {
 				}
 			}else{
 				ctx , cancel := context.WithTimeout(context.Background(),time.Duration(1)*time.Millisecond)
-				defer cancel()
+				cancel()
 				err := SaveUser(user,ctx,bkpUser)
 				if err != nil {
 					t.Log("Problem in modifying user:",v)

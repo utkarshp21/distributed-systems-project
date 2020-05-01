@@ -3,11 +3,10 @@ package repository
 import (
 	"container/list"
 	"context"
-	"time"
 	"strconv"
 	"sync"
 	"testing"
-	//profileStorage "profile/repository"
+	"time"
 )
 
 
@@ -79,7 +78,7 @@ func TestSaveTweetContext(t *testing.T) {
 
 			}else{
 				ctx , cancel := context.WithTimeout(context.Background(),time.Duration(1)*time.Millisecond)
-				defer cancel()
+				cancel()
 				for j := 0 ; j < 3 ; j++ {
 					tweetContent := tweetUser + "tweet" + strconv.Itoa(j)
 					err := SaveTweet(tweetUser, tweetContent, ctx)

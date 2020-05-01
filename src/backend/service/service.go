@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	//repository "profile/repository"
 )
 
 type server struct {
@@ -100,13 +99,6 @@ func (*server) Register(ctx context.Context, request *proto.RegisterRequest) (*p
 	ctxErr2 := repository.SaveUserRegister(registerFromInput,ctx)
 
 	if ctxErr2 != nil{
-		response := &proto.RegisterResponse{Message:"Request timeout. Try again"}
-		return response, nil
-	}
-
-	ctxErr3 := repository.InitialiseTweets(registerFromInput,ctx)
-
-	if ctxErr3 != nil{
 		response := &proto.RegisterResponse{Message:"Request timeout. Try again"}
 		return response, nil
 	}
