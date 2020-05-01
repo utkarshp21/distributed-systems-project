@@ -488,35 +488,34 @@ func init() {
 }
 
 var fileDescriptor_a0b84a42fa06f626 = []byte{
-	// 446 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x92, 0xcd, 0x8e, 0xd3, 0x30,
-	0x14, 0x85, 0x09, 0x3f, 0xa5, 0xbd, 0x9d, 0x4e, 0x90, 0x17, 0x4c, 0x30, 0x2c, 0x46, 0x5e, 0x01,
-	0x82, 0x4a, 0x53, 0xb6, 0x48, 0x20, 0x04, 0x65, 0x04, 0x91, 0x40, 0x85, 0x11, 0x3f, 0x12, 0x8b,
-	0x0c, 0xbd, 0x09, 0x11, 0x69, 0x9c, 0xda, 0x0e, 0x7d, 0x00, 0x5e, 0x1c, 0xc5, 0x89, 0x1d, 0x37,
-	0xa9, 0x54, 0x28, 0xbb, 0x9e, 0x7b, 0x72, 0x3e, 0x5f, 0xd7, 0x07, 0x26, 0x12, 0xc5, 0xaf, 0xf4,
-	0x3b, 0x4e, 0x0b, 0xc1, 0x15, 0x27, 0xa3, 0xa8, 0x54, 0x3f, 0xf4, 0x4f, 0xf6, 0xdb, 0x03, 0x5f,
-	0x60, 0x92, 0x4a, 0x85, 0x62, 0x81, 0xeb, 0x12, 0xa5, 0x22, 0x14, 0x86, 0xa5, 0x44, 0x91, 0x47,
-	0x2b, 0x0c, 0xbc, 0x53, 0xef, 0xfe, 0x68, 0x61, 0x75, 0xe5, 0x15, 0x91, 0x94, 0x1b, 0x2e, 0x96,
-	0xc1, 0xd5, 0xda, 0x33, 0x9a, 0xdc, 0x83, 0x51, 0x9c, 0x0a, 0xa9, 0x74, 0xf0, 0x9a, 0x36, 0xdb,
-	0x41, 0x95, 0xcc, 0xa2, 0xc6, 0xbc, 0x5e, 0x27, 0x8d, 0x66, 0x8f, 0xe0, 0x56, 0xbb, 0x84, 0x2c,
-	0x78, 0x2e, 0x91, 0x04, 0x70, 0x73, 0x85, 0x52, 0x46, 0x89, 0x59, 0xc2, 0x48, 0x36, 0x87, 0xa3,
-	0x8c, 0x27, 0x69, 0xfe, 0x9f, 0xfb, 0xb2, 0xb7, 0x30, 0x69, 0x38, 0xfb, 0x8e, 0x24, 0xa7, 0x30,
-	0x56, 0xfc, 0x27, 0xe6, 0x52, 0x89, 0x34, 0x4f, 0x1a, 0x92, 0x3b, 0x62, 0x67, 0x1a, 0xc6, 0x4b,
-	0x65, 0xb6, 0xea, 0x44, 0xbc, 0x7e, 0xe4, 0x21, 0x1c, 0x9b, 0xc8, 0xde, 0x3b, 0x9f, 0xc3, 0x71,
-	0x21, 0x78, 0x9c, 0x66, 0xe8, 0xdc, 0x5a, 0xe0, 0xba, 0x88, 0xc4, 0xea, 0xcc, 0xdc, 0xda, 0x68,
-	0xc7, 0x9b, 0x99, 0x5b, 0x1b, 0xcd, 0x1e, 0x83, 0x6f, 0x49, 0xcd, 0xb1, 0xfa, 0x73, 0xd9, 0x41,
-	0xd5, 0x9a, 0x3d, 0x80, 0x71, 0x8c, 0xb8, 0xfc, 0x8b, 0x53, 0xab, 0x77, 0xa9, 0x3f, 0xdd, 0x8f,
-	0x75, 0x3c, 0x67, 0xc3, 0x5a, 0xcf, 0x3e, 0xb7, 0x95, 0xfc, 0x50, 0xf7, 0x96, 0xbc, 0x82, 0xe1,
-	0xa2, 0x19, 0x11, 0x3a, 0xb5, 0xf5, 0x9d, 0x76, 0xaa, 0x4b, 0xef, 0xee, 0xf4, 0xea, 0x7d, 0xd8,
-	0x95, 0x59, 0xd8, 0x34, 0xc7, 0x60, 0x9f, 0xc2, 0x8d, 0xb0, 0xd2, 0xe4, 0xc4, 0xc9, 0xb9, 0xdd,
-	0xa2, 0x41, 0xdf, 0xb0, 0xb4, 0xf7, 0xe6, 0xc9, 0x0d, 0xee, 0x19, 0x0c, 0x42, 0x3d, 0x20, 0x9d,
-	0x58, 0x5b, 0x0b, 0x7a, 0x67, 0x87, 0x63, 0x89, 0x5f, 0x60, 0x32, 0xe7, 0x59, 0xc6, 0x37, 0x86,
-	0x78, 0xde, 0x1d, 0xb8, 0xf1, 0xed, 0x42, 0x50, 0xba, 0xcb, 0xb2, 0xe8, 0x6f, 0xe0, 0x5f, 0xe4,
-	0xf1, 0x16, 0xeb, 0x4d, 0x7f, 0x74, 0x30, 0xfe, 0x13, 0x1c, 0x7d, 0xdc, 0x20, 0xda, 0xbf, 0xe2,
-	0x75, 0x47, 0x1f, 0x0c, 0x7e, 0x07, 0xe3, 0x39, 0xe2, 0xd2, 0x70, 0x9e, 0x6f, 0xcb, 0xdb, 0x4e,
-	0xd6, 0xa9, 0x29, 0x3d, 0xe9, 0xcd, 0x9d, 0x4d, 0xfd, 0x0b, 0x89, 0x22, 0x4c, 0xa5, 0x5d, 0xee,
-	0x65, 0x7f, 0xf4, 0xef, 0xe0, 0x17, 0xc3, 0xaf, 0x03, 0xed, 0x5d, 0x5e, 0x0e, 0xb4, 0xff, 0xe4,
-	0x4f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x58, 0xb2, 0x69, 0x87, 0x77, 0x05, 0x00, 0x00,
+	// 425 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x93, 0xc1, 0x8e, 0xd3, 0x30,
+	0x10, 0x86, 0x09, 0x2c, 0xdd, 0x76, 0xba, 0xdd, 0x20, 0x1f, 0xd8, 0x60, 0x38, 0x54, 0x3e, 0x01,
+	0x82, 0x4a, 0x2d, 0x57, 0x24, 0x10, 0x82, 0x52, 0x41, 0x4f, 0xa5, 0xbd, 0x70, 0x4b, 0xe9, 0x24,
+	0x58, 0xa4, 0x71, 0x6a, 0x3b, 0xe4, 0x01, 0x78, 0x27, 0x9e, 0x0f, 0xc5, 0x89, 0x53, 0x93, 0x56,
+	0x2a, 0xa2, 0x7b, 0xcb, 0xef, 0x7f, 0xfe, 0xcf, 0x63, 0xcd, 0x04, 0x06, 0x0a, 0xe5, 0x4f, 0xfe,
+	0x0d, 0x47, 0x99, 0x14, 0x5a, 0x90, 0x5e, 0x98, 0xeb, 0xef, 0xe6, 0x93, 0xfd, 0xf2, 0xc0, 0x97,
+	0x18, 0x73, 0xa5, 0x51, 0x2e, 0x70, 0x97, 0xa3, 0xd2, 0x84, 0x42, 0x37, 0x57, 0x28, 0xd3, 0x70,
+	0x8b, 0x81, 0x37, 0xf4, 0x9e, 0xf6, 0x16, 0x8d, 0x2e, 0xbd, 0x2c, 0x54, 0xaa, 0x10, 0x72, 0x13,
+	0xdc, 0xad, 0x3c, 0xab, 0xc9, 0x13, 0xe8, 0x45, 0x5c, 0x2a, 0x6d, 0x82, 0xf7, 0x8c, 0xb9, 0x3f,
+	0x28, 0x93, 0x49, 0x58, 0x9b, 0x17, 0x55, 0xd2, 0x6a, 0xf6, 0x02, 0x1e, 0xec, 0x9b, 0x50, 0x99,
+	0x48, 0x15, 0x92, 0x00, 0x2e, 0xb7, 0xa8, 0x54, 0x18, 0xdb, 0x26, 0xac, 0x64, 0x53, 0xb8, 0x4a,
+	0x44, 0xcc, 0xd3, 0x33, 0xfb, 0x65, 0x9f, 0x61, 0x50, 0x73, 0x4e, 0x5d, 0x49, 0x86, 0xd0, 0xd7,
+	0xe2, 0x07, 0xa6, 0x4a, 0x4b, 0x9e, 0xc6, 0x35, 0xc9, 0x3d, 0x62, 0x63, 0x03, 0x13, 0xb9, 0xb6,
+	0x5d, 0xb5, 0x22, 0xde, 0x61, 0xe4, 0x39, 0x5c, 0xdb, 0xc8, 0xc9, 0x37, 0xcf, 0xe0, 0x3a, 0x93,
+	0x22, 0xe2, 0x09, 0x3a, 0xaf, 0x96, 0xb8, 0xcb, 0x42, 0xb9, 0x1d, 0xdb, 0x57, 0x5b, 0xed, 0x78,
+	0x13, 0xfb, 0x6a, 0xab, 0xd9, 0x4b, 0xf0, 0x1b, 0x52, 0x7d, 0xad, 0x29, 0x57, 0x2d, 0x54, 0xa5,
+	0xd9, 0x33, 0xe8, 0x47, 0x88, 0x9b, 0x7f, 0xb8, 0xb5, 0x9c, 0x4b, 0x55, 0x7a, 0x1a, 0xeb, 0x78,
+	0x4e, 0x87, 0x95, 0x9e, 0xfc, 0xbe, 0x80, 0xcb, 0x65, 0xc1, 0xb5, 0x46, 0x49, 0x3e, 0x40, 0x77,
+	0x51, 0x6f, 0x06, 0xa1, 0xa3, 0x66, 0x6f, 0x47, 0xad, 0x9d, 0xa5, 0x8f, 0x8f, 0x7a, 0x55, 0x23,
+	0xec, 0x0e, 0x79, 0x0d, 0xf7, 0xe7, 0xe5, 0xa8, 0xc9, 0x8d, 0x53, 0xe7, 0x2e, 0x11, 0x0d, 0x0e,
+	0x8d, 0x26, 0xfd, 0x06, 0x3a, 0x73, 0x33, 0x28, 0xd2, 0xaa, 0xda, 0x8f, 0x9b, 0x3e, 0x3a, 0xe2,
+	0x34, 0x80, 0x19, 0x0c, 0xa6, 0x22, 0x49, 0x44, 0xf1, 0xa5, 0xfa, 0x0f, 0x89, 0x5b, 0xfd, 0xf7,
+	0x5c, 0x29, 0x3d, 0x66, 0x35, 0xa4, 0x4f, 0xe0, 0xaf, 0xd2, 0xe8, 0x76, 0x58, 0x1f, 0xe1, 0x6a,
+	0x59, 0x20, 0xea, 0xb3, 0x41, 0x6f, 0xa1, 0x3f, 0x45, 0xdc, 0x58, 0xce, 0x43, 0xa7, 0xd8, 0xd9,
+	0x1d, 0x7a, 0x73, 0x70, 0xde, 0x10, 0xde, 0x83, 0xbf, 0x52, 0x28, 0xe7, 0x5c, 0xe9, 0xff, 0xa7,
+	0xbc, 0xeb, 0x7e, 0xed, 0x18, 0x6f, 0xbd, 0xee, 0x18, 0xff, 0xd5, 0x9f, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0xa4, 0x98, 0x38, 0xca, 0xf9, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -527,576 +526,324 @@ var _ grpc.ClientConnInterface
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion6
 
-// RegisterServiceClient is the client API for RegisterService service.
+// TwitterClient is the client API for Twitter service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type RegisterServiceClient interface {
+type TwitterClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
+	FollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	UnfollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	TweetService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	FeedService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
+	UserListService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
 }
 
-type registerServiceClient struct {
+type twitterClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRegisterServiceClient(cc grpc.ClientConnInterface) RegisterServiceClient {
-	return &registerServiceClient{cc}
+func NewTwitterClient(cc grpc.ClientConnInterface) TwitterClient {
+	return &twitterClient{cc}
 }
 
-func (c *registerServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+func (c *twitterClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	out := new(RegisterResponse)
-	err := c.cc.Invoke(ctx, "/authproto.registerService/Register", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RegisterServiceServer is the server API for RegisterService service.
-type RegisterServiceServer interface {
+func (c *twitterClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *twitterClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
+	out := new(LogoutResponse)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/Logout", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *twitterClient) FollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/FollowService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *twitterClient) UnfollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/UnfollowService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *twitterClient) TweetService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/TweetService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *twitterClient) FeedService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
+	out := new(FeedResponse)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/FeedService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *twitterClient) UserListService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
+	out := new(FeedResponse)
+	err := c.cc.Invoke(ctx, "/authproto.Twitter/UserListService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TwitterServer is the server API for Twitter service.
+type TwitterServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	FollowService(context.Context, *ProfileRequest) (*ProfileResponse, error)
+	UnfollowService(context.Context, *ProfileRequest) (*ProfileResponse, error)
+	TweetService(context.Context, *ProfileRequest) (*ProfileResponse, error)
+	FeedService(context.Context, *FeedRequest) (*FeedResponse, error)
+	UserListService(context.Context, *FeedRequest) (*FeedResponse, error)
 }
 
-// UnimplementedRegisterServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedRegisterServiceServer struct {
+// UnimplementedTwitterServer can be embedded to have forward compatible implementations.
+type UnimplementedTwitterServer struct {
 }
 
-func (*UnimplementedRegisterServiceServer) Register(ctx context.Context, req *RegisterRequest) (*RegisterResponse, error) {
+func (*UnimplementedTwitterServer) Register(ctx context.Context, req *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-
-func RegisterRegisterServiceServer(s *grpc.Server, srv RegisterServiceServer) {
-	s.RegisterService(&_RegisterService_serviceDesc, srv)
+func (*UnimplementedTwitterServer) Login(ctx context.Context, req *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (*UnimplementedTwitterServer) Logout(ctx context.Context, req *LogoutRequest) (*LogoutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (*UnimplementedTwitterServer) FollowService(ctx context.Context, req *ProfileRequest) (*ProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FollowService not implemented")
+}
+func (*UnimplementedTwitterServer) UnfollowService(ctx context.Context, req *ProfileRequest) (*ProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnfollowService not implemented")
+}
+func (*UnimplementedTwitterServer) TweetService(ctx context.Context, req *ProfileRequest) (*ProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TweetService not implemented")
+}
+func (*UnimplementedTwitterServer) FeedService(ctx context.Context, req *FeedRequest) (*FeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FeedService not implemented")
+}
+func (*UnimplementedTwitterServer) UserListService(ctx context.Context, req *FeedRequest) (*FeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserListService not implemented")
 }
 
-func _RegisterService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func RegisterTwitterServer(s *grpc.Server, srv TwitterServer) {
+	s.RegisterService(&_Twitter_serviceDesc, srv)
+}
+
+func _Twitter_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RegisterServiceServer).Register(ctx, in)
+		return srv.(TwitterServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authproto.registerService/Register",
+		FullMethod: "/authproto.Twitter/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegisterServiceServer).Register(ctx, req.(*RegisterRequest))
+		return srv.(TwitterServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _RegisterService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.registerService",
-	HandlerType: (*RegisterServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Register",
-			Handler:    _RegisterService_Register_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
-}
-
-// LoginServiceClient is the client API for LoginService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type LoginServiceClient interface {
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-}
-
-type loginServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewLoginServiceClient(cc grpc.ClientConnInterface) LoginServiceClient {
-	return &loginServiceClient{cc}
-}
-
-func (c *loginServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, "/authproto.loginService/Login", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// LoginServiceServer is the server API for LoginService service.
-type LoginServiceServer interface {
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-}
-
-// UnimplementedLoginServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedLoginServiceServer struct {
-}
-
-func (*UnimplementedLoginServiceServer) Login(ctx context.Context, req *LoginRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
-}
-
-func RegisterLoginServiceServer(s *grpc.Server, srv LoginServiceServer) {
-	s.RegisterService(&_LoginService_serviceDesc, srv)
-}
-
-func _LoginService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Twitter_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LoginServiceServer).Login(ctx, in)
+		return srv.(TwitterServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authproto.loginService/Login",
+		FullMethod: "/authproto.Twitter/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoginServiceServer).Login(ctx, req.(*LoginRequest))
+		return srv.(TwitterServer).Login(ctx, req.(*LoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _LoginService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.loginService",
-	HandlerType: (*LoginServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Login",
-			Handler:    _LoginService_Login_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
-}
-
-// LogoutServiceClient is the client API for LogoutService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type LogoutServiceClient interface {
-	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
-}
-
-type logoutServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewLogoutServiceClient(cc grpc.ClientConnInterface) LogoutServiceClient {
-	return &logoutServiceClient{cc}
-}
-
-func (c *logoutServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
-	out := new(LogoutResponse)
-	err := c.cc.Invoke(ctx, "/authproto.logoutService/Logout", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// LogoutServiceServer is the server API for LogoutService service.
-type LogoutServiceServer interface {
-	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
-}
-
-// UnimplementedLogoutServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedLogoutServiceServer struct {
-}
-
-func (*UnimplementedLogoutServiceServer) Logout(ctx context.Context, req *LogoutRequest) (*LogoutResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
-}
-
-func RegisterLogoutServiceServer(s *grpc.Server, srv LogoutServiceServer) {
-	s.RegisterService(&_LogoutService_serviceDesc, srv)
-}
-
-func _LogoutService_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Twitter_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LogoutRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogoutServiceServer).Logout(ctx, in)
+		return srv.(TwitterServer).Logout(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authproto.logoutService/Logout",
+		FullMethod: "/authproto.Twitter/Logout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogoutServiceServer).Logout(ctx, req.(*LogoutRequest))
+		return srv.(TwitterServer).Logout(ctx, req.(*LogoutRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _LogoutService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.logoutService",
-	HandlerType: (*LogoutServiceServer)(nil),
+func _Twitter_FollowService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TwitterServer).FollowService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authproto.Twitter/FollowService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TwitterServer).FollowService(ctx, req.(*ProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Twitter_UnfollowService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TwitterServer).UnfollowService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authproto.Twitter/UnfollowService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TwitterServer).UnfollowService(ctx, req.(*ProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Twitter_TweetService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TwitterServer).TweetService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authproto.Twitter/TweetService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TwitterServer).TweetService(ctx, req.(*ProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Twitter_FeedService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TwitterServer).FeedService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authproto.Twitter/FeedService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TwitterServer).FeedService(ctx, req.(*FeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Twitter_UserListService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TwitterServer).UserListService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authproto.Twitter/UserListService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TwitterServer).UserListService(ctx, req.(*FeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Twitter_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "authproto.Twitter",
+	HandlerType: (*TwitterServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Register",
+			Handler:    _Twitter_Register_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _Twitter_Login_Handler,
+		},
 		{
 			MethodName: "Logout",
-			Handler:    _LogoutService_Logout_Handler,
+			Handler:    _Twitter_Logout_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
-}
-
-// FollowServiceClient is the client API for FollowService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type FollowServiceClient interface {
-	FollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
-}
-
-type followServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewFollowServiceClient(cc grpc.ClientConnInterface) FollowServiceClient {
-	return &followServiceClient{cc}
-}
-
-func (c *followServiceClient) FollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, "/authproto.FollowService/FollowService", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FollowServiceServer is the server API for FollowService service.
-type FollowServiceServer interface {
-	FollowService(context.Context, *ProfileRequest) (*ProfileResponse, error)
-}
-
-// UnimplementedFollowServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedFollowServiceServer struct {
-}
-
-func (*UnimplementedFollowServiceServer) FollowService(ctx context.Context, req *ProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FollowService not implemented")
-}
-
-func RegisterFollowServiceServer(s *grpc.Server, srv FollowServiceServer) {
-	s.RegisterService(&_FollowService_serviceDesc, srv)
-}
-
-func _FollowService_FollowService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FollowServiceServer).FollowService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authproto.FollowService/FollowService",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowServiceServer).FollowService(ctx, req.(*ProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _FollowService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.FollowService",
-	HandlerType: (*FollowServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "FollowService",
-			Handler:    _FollowService_FollowService_Handler,
+			Handler:    _Twitter_FollowService_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
-}
-
-// UnfollowServiceClient is the client API for UnfollowService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type UnfollowServiceClient interface {
-	UnfollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
-}
-
-type unfollowServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewUnfollowServiceClient(cc grpc.ClientConnInterface) UnfollowServiceClient {
-	return &unfollowServiceClient{cc}
-}
-
-func (c *unfollowServiceClient) UnfollowService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, "/authproto.UnfollowService/UnfollowService", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// UnfollowServiceServer is the server API for UnfollowService service.
-type UnfollowServiceServer interface {
-	UnfollowService(context.Context, *ProfileRequest) (*ProfileResponse, error)
-}
-
-// UnimplementedUnfollowServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedUnfollowServiceServer struct {
-}
-
-func (*UnimplementedUnfollowServiceServer) UnfollowService(ctx context.Context, req *ProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UnfollowService not implemented")
-}
-
-func RegisterUnfollowServiceServer(s *grpc.Server, srv UnfollowServiceServer) {
-	s.RegisterService(&_UnfollowService_serviceDesc, srv)
-}
-
-func _UnfollowService_UnfollowService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UnfollowServiceServer).UnfollowService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authproto.UnfollowService/UnfollowService",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UnfollowServiceServer).UnfollowService(ctx, req.(*ProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _UnfollowService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.UnfollowService",
-	HandlerType: (*UnfollowServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "UnfollowService",
-			Handler:    _UnfollowService_UnfollowService_Handler,
+			Handler:    _Twitter_UnfollowService_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
-}
-
-// TweetServiceClient is the client API for TweetService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type TweetServiceClient interface {
-	TweetService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
-}
-
-type tweetServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewTweetServiceClient(cc grpc.ClientConnInterface) TweetServiceClient {
-	return &tweetServiceClient{cc}
-}
-
-func (c *tweetServiceClient) TweetService(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error) {
-	out := new(ProfileResponse)
-	err := c.cc.Invoke(ctx, "/authproto.TweetService/TweetService", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// TweetServiceServer is the server API for TweetService service.
-type TweetServiceServer interface {
-	TweetService(context.Context, *ProfileRequest) (*ProfileResponse, error)
-}
-
-// UnimplementedTweetServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedTweetServiceServer struct {
-}
-
-func (*UnimplementedTweetServiceServer) TweetService(ctx context.Context, req *ProfileRequest) (*ProfileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TweetService not implemented")
-}
-
-func RegisterTweetServiceServer(s *grpc.Server, srv TweetServiceServer) {
-	s.RegisterService(&_TweetService_serviceDesc, srv)
-}
-
-func _TweetService_TweetService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TweetServiceServer).TweetService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authproto.TweetService/TweetService",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TweetServiceServer).TweetService(ctx, req.(*ProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _TweetService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.TweetService",
-	HandlerType: (*TweetServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "TweetService",
-			Handler:    _TweetService_TweetService_Handler,
+			Handler:    _Twitter_TweetService_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
-}
-
-// FeedServiceClient is the client API for FeedService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type FeedServiceClient interface {
-	FeedService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
-}
-
-type feedServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewFeedServiceClient(cc grpc.ClientConnInterface) FeedServiceClient {
-	return &feedServiceClient{cc}
-}
-
-func (c *feedServiceClient) FeedService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
-	out := new(FeedResponse)
-	err := c.cc.Invoke(ctx, "/authproto.FeedService/FeedService", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// FeedServiceServer is the server API for FeedService service.
-type FeedServiceServer interface {
-	FeedService(context.Context, *FeedRequest) (*FeedResponse, error)
-}
-
-// UnimplementedFeedServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedFeedServiceServer struct {
-}
-
-func (*UnimplementedFeedServiceServer) FeedService(ctx context.Context, req *FeedRequest) (*FeedResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FeedService not implemented")
-}
-
-func RegisterFeedServiceServer(s *grpc.Server, srv FeedServiceServer) {
-	s.RegisterService(&_FeedService_serviceDesc, srv)
-}
-
-func _FeedService_FeedService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FeedRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FeedServiceServer).FeedService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authproto.FeedService/FeedService",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FeedServiceServer).FeedService(ctx, req.(*FeedRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _FeedService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.FeedService",
-	HandlerType: (*FeedServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "FeedService",
-			Handler:    _FeedService_FeedService_Handler,
+			Handler:    _Twitter_FeedService_Handler,
 		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
-}
-
-// UserListServiceClient is the client API for UserListService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type UserListServiceClient interface {
-	UserListService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
-}
-
-type userListServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewUserListServiceClient(cc grpc.ClientConnInterface) UserListServiceClient {
-	return &userListServiceClient{cc}
-}
-
-func (c *userListServiceClient) UserListService(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
-	out := new(FeedResponse)
-	err := c.cc.Invoke(ctx, "/authproto.UserListService/UserListService", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// UserListServiceServer is the server API for UserListService service.
-type UserListServiceServer interface {
-	UserListService(context.Context, *FeedRequest) (*FeedResponse, error)
-}
-
-// UnimplementedUserListServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedUserListServiceServer struct {
-}
-
-func (*UnimplementedUserListServiceServer) UserListService(ctx context.Context, req *FeedRequest) (*FeedResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserListService not implemented")
-}
-
-func RegisterUserListServiceServer(s *grpc.Server, srv UserListServiceServer) {
-	s.RegisterService(&_UserListService_serviceDesc, srv)
-}
-
-func _UserListService_UserListService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FeedRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserListServiceServer).UserListService(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authproto.UserListService/UserListService",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserListServiceServer).UserListService(ctx, req.(*FeedRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _UserListService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authproto.UserListService",
-	HandlerType: (*UserListServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "UserListService",
-			Handler:    _UserListService_UserListService_Handler,
+			Handler:    _Twitter_UserListService_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

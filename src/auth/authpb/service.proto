@@ -14,10 +14,6 @@ message registerResponse {
     string message = 1;
 }
 
-service registerService {
-    rpc Register(registerRequest) returns (registerResponse) {};
-}
-
 message loginRequest{
     string username = 1;
     string password = 2;
@@ -28,20 +24,12 @@ message loginResponse {
     string tokenstring = 2;
 }
 
-service loginService {
-    rpc Login(loginRequest) returns (loginResponse) {};
-}
-
 message logoutRequest{
     string tokenstring = 1;
 }
 
 message logoutResponse {
     string message = 1;
-}
-
-service logoutService {
-    rpc Logout(logoutRequest) returns (logoutResponse) {};
 }
 
 message profileRequest {
@@ -62,22 +50,13 @@ message feedResponse {
     string resparm2 = 2;
 }
 
-service FollowService {
+service Twitter {
+    rpc Register(registerRequest) returns (registerResponse) {};
+    rpc Login(loginRequest) returns (loginResponse) {};
+    rpc Logout(logoutRequest) returns (logoutResponse) {};
     rpc FollowService(profileRequest) returns (profileResponse) {};
-}
-
-service UnfollowService{
     rpc UnfollowService(profileRequest) returns (profileResponse) {};
-}
-
-service TweetService{
     rpc TweetService(profileRequest) returns (profileResponse) {};
-}
-
-service FeedService{
     rpc FeedService(feedRequest) returns (feedResponse) {};
-}
-
-service UserListService{
     rpc UserListService(feedRequest) returns (feedResponse) {};
 }

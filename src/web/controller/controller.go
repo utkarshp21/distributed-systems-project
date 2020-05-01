@@ -37,7 +37,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer cc.Close()
 
-		client := authpb.NewRegisterServiceClient(cc)
+		client := authpb.NewTwitterClient(cc)
 
 		r.ParseForm()
 		request := &authpb.RegisterRequest{Firstname: r.Form["firstname"][0], Lastname:r.Form["lastname"][0], Username:r.Form["username"][0], Password:r.Form["password"][0]}
@@ -83,7 +83,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		defer cc.Close()
 
-		client := authpb.NewLoginServiceClient(cc)
+		client := authpb.NewTwitterClient(cc)
 
 		r.ParseForm()
 		request := &authpb.LoginRequest{Username: r.Form["username"][0], Password: r.Form["password"][0]}
@@ -136,7 +136,7 @@ func SignoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewLogoutServiceClient(cc)
+	client := authpb.NewTwitterClient(cc)
 
 	request := &authpb.LogoutRequest{Tokenstring: tokenString}
 
@@ -209,7 +209,7 @@ func UserListHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewUserListServiceClient(cc)
+	client := authpb.NewTwitterClient(cc)
 
 	request := &authpb.FeedRequest{Reqparm1 : feedUserUsername}
 	response, _ := client.UserListService(context.Background(),request)
@@ -267,7 +267,7 @@ func FollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewFollowServiceClient(cc)
+	client := authpb.NewTwitterClient(cc)
 
 	request := &authpb.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: followuserUsername}
 	response, _ := client.FollowService(context.Background(),request)
@@ -323,7 +323,7 @@ func UnfollowHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewUnfollowServiceClient(cc)
+	client := authpb.NewTwitterClient(cc)
 
 	request := &authpb.ProfileRequest{Reqparm1 : userPresentUsername, Reqparm2: unfollowuserUsername}
 	response, _ := client.UnfollowService(context.Background(),request)
@@ -379,7 +379,7 @@ func TweetHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewTweetServiceClient(cc)
+	client := authpb.NewTwitterClient(cc)
 
 	request := &authpb.ProfileRequest{Reqparm1 : tweetContent, Reqparm2: tweetUserUsername}
 	response, _ := client.TweetService(context.Background(),request)
@@ -429,7 +429,7 @@ func FeedHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer cc.Close()
 
-	client := authpb.NewFeedServiceClient(cc)
+	client := authpb.NewTwitterClient(cc)
 
 	request := &authpb.FeedRequest{Reqparm1 : feedUserUsername}
 	response, _ := client.FeedService(context.Background(),request)

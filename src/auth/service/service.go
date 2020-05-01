@@ -348,14 +348,7 @@ func main() {
 	log.Printf("Server is listening on %v ...", address)
 
 	s := grpc.NewServer()
-	authpb.RegisterRegisterServiceServer(s, &server{})
-	authpb.RegisterLoginServiceServer(s, &server{})
-	authpb.RegisterLogoutServiceServer(s, &server{})
-	authpb.RegisterFollowServiceServer(s, &server{})
-	authpb.RegisterUnfollowServiceServer(s, &server{})
-	authpb.RegisterTweetServiceServer(s, &server{})
-	authpb.RegisterFeedServiceServer(s, &server{})
-	authpb.RegisterUserListServiceServer(s, &server{})
+	authpb.RegisterTwitterServer(s, &server{})
 
 	s.Serve(lis)
 }
